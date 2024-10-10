@@ -1,12 +1,12 @@
 import Header from "@/components/Header"
 
-const Dashboard = () => {
+const page = () => {
   return (
     <div>
-      <Header title='Dashboard' />
+      <Header title='Video Editing' />
       
     </div>
   )
 }
 
-export default Dashboard
+export default page

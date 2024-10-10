@@ -1,9 +1,10 @@
+import Header from '@/components/Header'
 import React from 'react'
 
 const Createcontent = () => {
   return (
     <div>
-      Createcontent
+      <Header title='Generate Script' />
     </div>
   )
 }

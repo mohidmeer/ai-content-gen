@@ -1,7 +1,5 @@
-import type { Metadata } from "next";
+import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
-
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -9,11 +7,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className='border border-green-700 p-10'
-      >
-         <p className="text-center">App Root Layout</p>
-        {children}
+      <body className="">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

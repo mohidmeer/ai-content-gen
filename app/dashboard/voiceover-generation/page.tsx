@@ -4,7 +4,7 @@ import React from 'react'
 const History = () => {
   return (
     <div>
-      <Header title='History' />
+      <Header title='Generate Voiceovers' />
     </div>
   )
 }

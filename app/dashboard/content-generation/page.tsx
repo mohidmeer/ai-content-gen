@@ -1,12 +1,14 @@
 import Header from '@/components/Header'
 import React from 'react'
 
-const History = () => {
+const Content = () => {
   return (
     <div>
-      <Header title='History' />
+      <Header title='Generate Content' />
+      
+
     </div>
   )
 }
 
-export default History
+export default Content
