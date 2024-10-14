@@ -25,7 +25,7 @@ const SideBar = () => {
 
   const pathname = usePathname();
   return (
-    <aside className='w-[300px] border h-screen bg-secondary/30  p-2 flex-shrink-0'>
+    <aside className='w-[250px] border h-full bg-secondary/30  p-2 flex-shrink-0'>
       <div className='ml-2'>
         <Logo />
 

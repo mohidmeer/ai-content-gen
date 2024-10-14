@@ -9,7 +9,7 @@ export default function Home() {
       <div className="h-screen flex flex-col justify-center items-center relative bg-hero">
 
         <h1 className="text-center">
-          Generate <span className="bg-text-gradient text-transparent"> viral-ready </span>  <br/> clips in seconds
+          Generate <span className="bg-text-gradient text-transparent"> viral-ready </span>  <br/> content in seconds
         </h1>
         <p className="text-2xl mt-5 text-center">
           Your all-in-one tool for creating AI voiceovers, engaging <br/> subtitles, optimized gameplay, and more.
