@@ -1,63 +1,69 @@
 "use client"
 import Header from '@/components/Header'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Textarea } from '@/components/ui/textarea';
-import { Progress } from '@/components/ui/progress';
 import ProgressBar from '@/components/ProgressBar';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import ContentTextEditor from '@/components/ContentTextEditor';
 import { MdRepeat } from 'react-icons/md';
 import { TbPlayerTrackNextFilled } from "react-icons/tb";
-const scriptTypes = [
-  { label: "Comedy/Funny", value: "comedy" },
-  { label: "Lifestyle", value: "lifestyle" },
-  { label: "Drama", value: "drama" },
-  { label: "Sci-Fi", value: "sci-fi" },
-  { label: "Adventure", value: "adventure" },
-  { label: "Mystery", value: "mystery" },
-  { label: "Romance", value: "romance" },
-  { label: "Thriller", value: "thriller" },
-  { label: "Historical Fiction", value: "historical-fiction" },
-  { label: "Fun Facts", value: "fun-facts" },
-  { label: "Short Stories", value: "short-stories" },
-  { label: "Fantasy", value: "fantasy" },
-  { label: "Supernatural", value: "supernatural" },
-  { label: "Self-Help", value: "self-help" },
-  { label: "Documentary", value: "documentary" },
-  { label: "Biographical", value: "biographical" },
-  { label: "Nature", value: "nature" },
-  { label: "Travel", value: "travel" },
-  { label: "Cooking", value: "cooking" },
-  { label: "Tech Reviews", value: "tech-reviews" },
-  { label: "Product Reviews", value: "product-reviews" },
-  { label: "DIY", value: "diy" },
-  { label: "Health & Fitness", value: "health-fitness" },
-  { label: "Motivational", value: "motivational" },
-  { label: "Podcast", value: "podcast" },
-  { label: "Virtual Reality", value: "vr" },
-  { label: "Animation", value: "animation" },
-  { label: "Interactive", value: "interactive" },
-  { label: "Seasonal", value: "seasonal" },
-  { label: "Cultural", value: "cultural" }
-];
-
-const languageStyles = [
-  { label: "Formal", value: "formal" },
-  { label: "Casual", value: "casual" },
-  { label: "Conversational", value: "conversational" },
-  { label: "Professional", value: "professional" },
-  { label: "Slang-heavy", value: "slang-heavy" }
-];
+import { LanguageStyles, ScriptTypes } from '@/constants';
+import { z } from "zod"
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { toast } from '@/hooks/use-toast';
+import { ToastAction } from '@/components/ui/toast';
+import { BiLoader } from 'react-icons/bi';
 
 
-
+const formSchema = z.object({
+  scriptType: z.string({ message: 'Please select a script type' }),
+  languageStyle: z.string({ message: 'Please select a language' }),
+  instructions: z.string().min(3),
+  scriptLength: z.number().min(10).max(300)
+})
 
 const Content = () => {
 
-  
-  const [scriptLength, setScriptLength] = useState([22])
+  // const [scriptLength, setScriptLength] = useState([22])
+  const [content, setContent] = useState(``)
+  const [isLodaing, setIsLoading] = useState(false)
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      scriptType: 'drama',
+      languageStyle: 'casual',
+      instructions: '',
+      scriptLength: 30
+    },
+
+  })
+  const { setValue, watch, formState: { defaultValues } } = form;
+
+ async function  onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true)
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    setContent(` <h2>Why Drinking Water is Essential</h2>
+
+                <p>Did you know that drinking water is one of the easiest ways to improve your health?</p>
+
+                <p>Water helps keep your skin glowing, your energy levels high, and even boosts your mood throughout the day.</p>
+
+                <h3>Stay Hydrated, Stay Healthy</h3>
+
+                <p>Whether you're working out, at work, or just relaxing, staying hydrated helps your body function at its best.</p>
+
+                <p>So next time, grab a bottle of water and take a sip. It’s a simple habit that can make a big difference.</p>
+
+                <p>Cheers to a healthier, happier you!</p> `)
+    setIsLoading(false)
+  }
+
+
 
 
   return (
@@ -65,56 +71,109 @@ const Content = () => {
       <Header title='Create new script' />
       <ProgressBar />
       <div className='flex mt-8 gap-8 '>
-        <div className='flex flex-col gap-8 border p-4 rounded-md   bg-card w-full'>
-          <div className='flex flex-col gap-4 '>
-            <h3 className='text-lg font-semibold '>What kind of script do you want to create today</h3>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className='flex flex-col gap-8 border p-4 rounded-md   w-full '>
+            <div className='flex flex-col gap-4 '>
+              <h3 className='text-lg font-semibold '>What kind of script do you want to create today</h3>
+              <ToggleGroup
+                type="single"
+                defaultValue={defaultValues?.scriptType}
+                size={'sm'}
+                className='flex gap-2 flex-wrap justify-start'
+                variant={'outline'}
+                onValueChange={(e) => { setValue("scriptType", e) }}
+              >
 
-            <ToggleGroup type="single" defaultValue='drama' size={'sm'} className='flex gap-2 flex-wrap justify-start ' variant={'outline'}>
-              {
-                scriptTypes.map((i) => (
-                  <ToggleGroupItem key={i.value} value={i.value} aria-label={`Toggle ${i.label}`}>{i.label}</ToggleGroupItem>
-                ))
-              }
-            </ToggleGroup>
+                {
+                  ScriptTypes.map((i) => (
+                    <ToggleGroupItem
+                      key={i.value}
+                      value={i.value}
+                      aria-label={`Toggle ${i.label}`}
 
-          </div>
-          <div className='flex flex-col gap-4'>
-            <h3 className='text-lg font-semibold '>Language style</h3>
+                    >{i.label}</ToggleGroupItem>
+                  ))
+                }
 
-            <ToggleGroup type="single" defaultValue='formal' size={'sm'} className='flex gap-2 flex-wrap justify-start ' variant={'outline'}>
-              {
-                languageStyles.map((i) => (
-                  <ToggleGroupItem key={i.value} value={i.value} aria-label={`Toggle ${i.label}`}>{i.label}</ToggleGroupItem>
-                ))
-              }
-            </ToggleGroup>
-
-          </div>
-
-          <div className='flex flex-col gap-4 w-full'>
-            <h3 className='text-lg  font-semibold  '>Please provide specific instructions for the script.</h3>
-            <Textarea rows={3} placeholder="Enter your script topic or instructions...." />
-          </div>
+              </ToggleGroup>
 
 
-          <div className='flex flex-col gap-4'>
-            <h3 className='text-lg  font-semibold  '>What is the desired length for your video?</h3>
-            <div className='flex gap-4 items-center '>
-              <Slider defaultValue={scriptLength} min={10} onValueChange={(e) => { setScriptLength(e) }} max={300} step={1} className='w-1/2' />
-              <p className='text-xs text-muted-foreground '> {`${scriptLength[0]} seconds ~${Math.ceil(scriptLength[0] * 2.3)} words `} </p>
             </div>
-          </div>
+            <div className='flex flex-col gap-4'>
+              <h3 className='text-lg font-semibold '>Language style</h3>
+              <ToggleGroup
+                type="single"
+                defaultValue={defaultValues?.languageStyle}
+                size={'sm'}
+                className='flex gap-2 flex-wrap justify-start '
+                variant={'outline'}
+                onValueChange={(e) => { setValue("languageStyle", e) }}
+              >
+                {
+                  LanguageStyles.map((i) => (
+                    <ToggleGroupItem
+                      key={i.value}
+                      value={i.value}
+                      aria-label={`Toggle ${i.label}`}
 
-          <Button className='shadow-2xl  '>
-            Generate
-          </Button>
+                    >{i.label}</ToggleGroupItem>
+                  ))
+                }
+              </ToggleGroup>
 
 
-        </div>
-        <div className='w-full flex flex-col min-h-[600px] border p-4'>
-          <ContentTextEditor/>
+            </div>
+
+            <FormField
+              control={form.control}
+              name="instructions"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    <h3 className='text-lg  font-semibold  '>Please provide specific instructions for the script.</h3>
+                  </FormLabel>
+                  <FormControl>
+                    <Textarea rows={3} placeholder="Enter your script topic or instructions...." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+
+            <div className='flex flex-col gap-4'>
+              <h3 className='text-lg  font-semibold  '>What is the desired length for your video?</h3>
+              <div className='flex gap-4 items-center '>
+                <Slider defaultValue={defaultValues?.scriptLength ? [defaultValues.scriptLength] : [22]}
+                  min={10}
+                  onValueChange={(e) => { setValue('scriptLength', e[0]) }}
+                  max={300}
+                  step={1}
+                  className='w-1/2' />
+                <p className='text-xs text-muted-foreground '>
+
+                  {`${watch('scriptLength')} seconds ~${Math.ceil(watch('scriptLength') * 2.3)} words `}
+
+                </p>
+              </div>
+            </div>
+            <Button type='submit' className='shadow-2xl'>
+              {
+                isLodaing && 
+
+                <BiLoader size={24} className="animate-spin" />
+
+              }
+              Generate
+            </Button>
+          </form>
+        </Form>
+        <div className='w-full flex flex-col min-h-[600px] border p-4 '>
+          <ContentTextEditor
+            content={content}
+          />
           <Button className='mt-2 ml-auto' size={'icon'} >
-            <MdRepeat/>
+            <MdRepeat />
           </Button>
 
           <Button className=' mt-auto mb-3 gap-2'  >

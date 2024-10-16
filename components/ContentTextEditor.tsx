@@ -57,11 +57,21 @@ const MenuBar = ({ editor }: any) => {
     )
 }
 
-const ContentTextEditor = () => {
-    const [selectionCoords, setSelectionCoords] = useState(null);
-    const [isTextSelected, setIsTextSelected] = useState(false);
+const ContentTextEditor = ({content}:{content:string}) => {
 
-    const editorRef = useRef(null); // Reference to the editor container
+
+    useEffect(() => {
+        if (editor && content) {
+          editor.commands.setContent(content); 
+        }
+      }, [content]);
+
+
+
+    // const [selectionCoords, setSelectionCoords] = useState(null);
+    // const [isTextSelected, setIsTextSelected] = useState(false);
+
+    // const editorRef = useRef(null); // Reference to the editor container
 
     // const handleMouseUp = () => {
     //   const selection = window.getSelection();
@@ -101,22 +111,6 @@ const ContentTextEditor = () => {
             }),
 
         ],
-        content: `
-                <h2>Why Drinking Water is Essential</h2>
-
-                <p>Did you know that drinking water is one of the easiest ways to improve your health?</p>
-
-                <p>Water helps keep your skin glowing, your energy levels high, and even boosts your mood throughout the day.</p>
-
-                <h3>Stay Hydrated, Stay Healthy</h3>
-
-                <p>Whether you're working out, at work, or just relaxing, staying hydrated helps your body function at its best.</p>
-
-                <p>So next time, grab a bottle of water and take a sip. It’s a simple habit that can make a big difference.</p>
-
-                <p>Cheers to a healthier, happier you!</p>
-
-      `,
     })
 
     return (
