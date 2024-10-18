@@ -7,17 +7,20 @@ import React, { useEffect, useState } from 'react'
 import Placeholder from '@tiptap/extension-placeholder'
 import { EditorMenuBar } from '../Editor/EditorMenuBar';
 import { EditorSkeleton } from '../Editor/EditorSkeleton';
-import { useContent } from '@/context/contentContext';
+import { useContent } from '@/context/ContentContext';
 
 
 
 const ContentTextEditor = ({   }) => {
 
-    const {  content, setContent } = useContent();
-
-    
-
+    const { step, content, setContent,setProgress } = useContent();
     const [loading, setLoading] = useState(false)
+
+    useEffect(() => {
+        if (step == 1 && content) {
+          setProgress(25)
+        }
+      }, [content])
 
 
 
@@ -32,23 +35,6 @@ const ContentTextEditor = ({   }) => {
             setContent();
         }
     }, [content]);
-
-    // useEffect(() => {
-    //     if (editor) {
-    //         editor.on('update', () => {
-    //             const currentContent = editor.getHTML(); // Get current HTML from the editor
-    //             setContent(currentContent); // Sync with parent component's content state
-    //         });
-    //     }
-    //     // Clean up event listener when component unmounts
-    //     return () => {
-    //         if (editor) {
-    //             editor.off('update'); // Remove the event listener when editor unmounts
-    //         }
-    //     };
-    // }, [editor, setContent]);
-
-
 
 
 
@@ -77,21 +63,9 @@ const ContentTextEditor = ({   }) => {
                     <>
                         <EditorMenuBar editor={editor} />
                         <EditorContent editor={editor}
-                        // onMouseUp={handleMouseUp} 
-                        // ref={editorRef} 
+                       
                         />
-                        {/* {isTextSelected && (
-                            <Button
-                            style={{
-                                position: 'absolute',
-                                top: `${selectionCoords?.top}px`,
-                                left: `${selectionCoords?.left}px`,
-                                
-                            }}
-                        >
-                            Action
-                        </Button>
-                    )} */}
+                        
                     </>
             }
         </>

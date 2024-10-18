@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, ReactNode, Dispatch, SetStateAction } from 'react';
 
 
-
 interface ContentContextProps {
     content: string;
     setContent: Dispatch<SetStateAction<string>>;
@@ -17,8 +16,8 @@ const ContentContext = createContext<ContentContextProps | undefined>(undefined)
 
 
 export const ContentProvider = ({ children }: { children: ReactNode }) => {
-    const [content, setContent] = useState<string>('');
-    const [step, setStep] = useState<number>(1);
+    const [content, setContent] = useState<string>();
+    const [step, setStep] = useState<number>(2);
     const [progress, setProgress] = useState<number>(22);
     const [images, setImages] = useState<string[]>([]);
 

@@ -25,17 +25,20 @@ const SideBar = () => {
 
   const pathname = usePathname();
   return (
-    <aside className='w-[250px] border h-full bg-secondary/30  p-2 flex-shrink-0'>
+    <aside className='hover:w-[180px] w-[100px] transition-all duration-300  border h-full bg-secondary/30  p-2 flex-shrink-0'>
       <div className='ml-2'>
-        <Logo />
+      <div className='flex flex-col items-center gap-2 p-2'>
+        <GiArtificialHive size={24} className="text-primary flex-shrink-0"  />
+        <Link className={` font-mono font-bold text-sm `} href='/'>Truffle.Ai</Link>
+      </div>
 
       </div>
 
-      <div className='mt-8 flex flex-col h-screen '>
+      <div className='mt-4 flex flex-col h-screen '>
         <div className='my-4' >
           <Divider text='Dashboard'/>
         </div>
-        <ul className='flex gap-1 flex-col  '>
+        <ul className='flex gap-4 flex-col  '>
 
           {
             DashboardNavMenuItems.map(({ title, href, icon: Icon }) => {
@@ -46,10 +49,10 @@ const SideBar = () => {
 
               return (
                 <Link
-                  className={` text-xs font-semibold flex items-center gap-2 py-2 px-2  rounded-md ${isActive ? 'bg-primary text-primary-foreground ':'hover:bg-primary/10'}  `}
+                  className={` text-xs font-semibold flex flex-col items-center text-center  py-2 px-2  rounded-md ${isActive ? 'bg-primary text-primary-foreground ':'hover:bg-primary/10'}  `}
                   key={href}
                   href={href} >
-                  <Icon size={18} />
+                  <Icon size={24} />
                   {title}
                 </Link>
 

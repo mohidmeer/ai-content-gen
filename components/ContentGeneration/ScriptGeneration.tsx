@@ -1,5 +1,5 @@
-
-import React, {  useState } from 'react'
+'use client'
+import React, {  useEffect, useState } from 'react'
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Textarea } from '@/components/ui/textarea';
 import { Slider } from '@/components/ui/slider';
@@ -10,7 +10,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { BiLoader } from 'react-icons/bi';
-import { useContent } from '@/context/contentContext';
+import { useContent } from '@/context/ContentContext';
 import ContentTextEditor from './ContentTextEditor';
 import { MdRepeat } from 'react-icons/md';
 
@@ -25,10 +25,17 @@ const formSchema = z.object({
 
 export default function ScriptGeneration() {
 
-    const { step, setStep, content, setContent, progress } = useContent();
-
-
     const [isLodaing, setIsLoading] = useState(false)
+    const { content, setContent,setProgress} = useContent();
+
+
+      useEffect(()=>{
+        if (content){
+            setProgress(25)
+        }
+      },[content])
+
+    
   
   
     const form = useForm<z.infer<typeof formSchema>>({
@@ -74,7 +81,7 @@ export default function ScriptGeneration() {
                 type="single"
                 defaultValue={defaultValues?.scriptType}
                 size={'sm'}
-                className='flex gap-2 flex-wrap justify-start'
+                className='flex gap-2 flex-wrap justify-start !text-xs'
                 variant={'outline'}
                 onValueChange={(e) => { setValue("scriptType", e) }}
               >
@@ -84,6 +91,7 @@ export default function ScriptGeneration() {
                     <ToggleGroupItem
                       key={i.value}
                       value={i.value}
+                      className='text-xs'
                       aria-label={`Toggle ${i.label}`}
   
                     >{i.label}</ToggleGroupItem>
@@ -109,6 +117,7 @@ export default function ScriptGeneration() {
                     <ToggleGroupItem
                       key={i.value}
                       value={i.value}
+                      className='text-xs'
                       aria-label={`Toggle ${i.label}`}
   
                     >{i.label}</ToggleGroupItem>
@@ -163,7 +172,7 @@ export default function ScriptGeneration() {
             </Button>
           </form>
         </Form>
-        <div className='w-full flex flex-col min-h-[600px] border p-4 '>
+        <div className='w-full flex flex-col  border p-4 max-h-[60vh] overflow-y-scroll' >
           <ContentTextEditor
             content={content}
           />
