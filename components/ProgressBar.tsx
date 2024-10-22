@@ -8,7 +8,7 @@ const ProgressBar = ({progress}:{progress:number}) => {
     useEffect(()=>{},[progress])
 
     return (
-        <div className='relative'>
+        <div className='relative '>
             <div className='flex justify-between mb-4 text-xs font-bold text-muted-foreground'>
                 <p className='ml-[22%]'>Generate your script</p>
                 <p>Generate Images</p>  

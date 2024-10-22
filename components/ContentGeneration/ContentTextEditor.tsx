@@ -11,7 +11,7 @@ import { useContent } from '@/context/ContentContext';
 
 
 
-const ContentTextEditor = ({   }) => {
+const ContentTextEditor = () => {
 
     const { step, content, setContent,setProgress } = useContent();
     const [loading, setLoading] = useState(false)
@@ -26,9 +26,9 @@ const ContentTextEditor = ({   }) => {
 
     useEffect(() => {
         async function setContent() {
-            setLoading(true)
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            editor.commands.setContent(content);
+            setLoading(true)    
+            await new Promise((resolve) => setTimeout(resolve, 1000));          
+            editor!.commands.setContent(content);
             setLoading(false)
         }
         if (editor && content) {

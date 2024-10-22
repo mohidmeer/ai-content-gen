@@ -9,15 +9,13 @@ import { TbPlayerTrackNextFilled } from "react-icons/tb";
 import ImageGeneration from '@/components/ContentGeneration/ImageGeneration';
 import { useContent } from '@/context/ContentContext';
 import ScriptGeneration from '@/components/ContentGeneration/ScriptGeneration';
+import VoiceGeneration from '@/components/ContentGeneration/VoiceGeneration';
 
 
 
 const Content = () => {
 
-  const { step, setStep, content, setContent, progress, setProgress } = useContent();
-
-
-
+  const { step, setStep, content, progress } = useContent();
 
 
 
@@ -25,13 +23,17 @@ const Content = () => {
     <>
       <Header title='Create new script' />
       <ProgressBar progress={progress} />
-      <div className='flex flex-col min-h-[80vh]'>
-          <div style={{ display: step === 1 ? 'block' : 'none' }}>
+      <div className='flex flex-col '>
+          <div className='overflow-hidden' style={{ display: step === 1 ? 'block' : 'none' }}>
             <ScriptGeneration />
           </div>
 
-          <div style={{ display: step === 2 ? 'block' : 'none' }}>
+          <div className='overflow-hidden' style={{ display: step === 2 ? 'block' : 'none' }}>
             <ImageGeneration />
+          </div>
+
+          <div className='overflow-hidden' style={{ display: step === 3 ? 'block' : 'none' }}>
+            <VoiceGeneration />
           </div>
 
         {
@@ -44,21 +46,18 @@ const Content = () => {
           </div>
         }
         {
-          step == 2 &&
-          <div className='flex justify-end mt-auto gap-4'>
-            <Button className=' ' size={'default'} onClick={() => { setStep(step - 1) }}  >
+          step >= 2 &&
+          <div className='flex justify-between  my-10 gap-4'>
+            <Button className='w-1/3 ' size={'default'} onClick={() => { setStep(step - 1) }}   >
               <MdArrowBackIos />
               Go Back
             </Button>
-            <Button className='gap-2 w-1/3 ' disabled={!content}  >
+            <Button className='gap-2 w-1/3 ' disabled={!content} onClick={() => { setStep(step + 1) }}  >
               Next
               <TbPlayerTrackNextFilled />
             </Button>
           </div>
         }
-
-
-
       </div>
     </>
   )

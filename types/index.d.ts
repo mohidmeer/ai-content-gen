@@ -1,3 +1,18 @@
+declare type Voice =  {
+  id:string
+  name: string;
+  labels: {
+    accent: string;
+    description: string;
+    age: string;
+    gender: string;
+    use_case: string;
+  };
+  preview_url: string;
+}
+
+
+
 
 declare type SearchParamProps = {
     params: { [key: string]: string };

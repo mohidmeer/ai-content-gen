@@ -25,7 +25,7 @@ const SideBar = () => {
 
   const pathname = usePathname();
   return (
-    <aside className='hover:w-[180px] w-[100px] transition-all duration-300  border h-full bg-secondary/30  p-2 flex-shrink-0'>
+    <aside className='hover:w-[180px] w-[100px] transition-all duration-300  border flex flex-col min-h-screen bg-secondary/30  p-2 flex-shrink-0 select-none'>
       <div className='ml-2'>
       <div className='flex flex-col items-center gap-2 p-2'>
         <GiArtificialHive size={24} className="text-primary flex-shrink-0"  />
@@ -34,11 +34,11 @@ const SideBar = () => {
 
       </div>
 
-      <div className='mt-4 flex flex-col h-screen '>
+      <div className='mt-4 flex flex-col sticky top-0 '>
         <div className='my-4' >
           <Divider text='Dashboard'/>
         </div>
-        <ul className='flex gap-4 flex-col  '>
+        <ul className='flex gap-4 flex-col '>
 
           {
             DashboardNavMenuItems.map(({ title, href, icon: Icon }) => {

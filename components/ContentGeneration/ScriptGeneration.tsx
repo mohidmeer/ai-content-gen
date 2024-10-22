@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React, {  useEffect, useState } from 'react'
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Textarea } from '@/components/ui/textarea';
@@ -173,9 +173,7 @@ export default function ScriptGeneration() {
           </form>
         </Form>
         <div className='w-full flex flex-col  border p-4 max-h-[60vh] overflow-y-scroll' >
-          <ContentTextEditor
-            content={content}
-          />
+          <ContentTextEditor/>
           <Button className='mt-2 ml-auto' size={'icon'} >
             <MdRepeat />
           </Button>

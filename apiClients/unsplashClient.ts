@@ -14,11 +14,11 @@ const unsplashClient = axios.create({
 export const unsplashAPi = {
 
 
-    getImage: async function (query: string, imageStyle: string) {
+    getImage: async function (query: string, imageStyle: string,aspectRatio) {
         try {
             const response = await unsplashClient.get('/photos/random', {
                 params: {
-                    query: `${query} ${imageStyle}`,
+                    query: `${query} ${imageStyle} ${aspectRatio}`,
                     count: 1,
                 },
             });
