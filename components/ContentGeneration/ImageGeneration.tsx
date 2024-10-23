@@ -7,11 +7,11 @@ import { BiLoader, BiSolidImageAdd } from "react-icons/bi";
 import { useContent } from "@/context/ContentContext";
 import { Skeleton } from "../ui/skeleton";
 import Image from "next/image";
-import { MdAdd, MdDownload, MdImage } from "react-icons/md";
+import { MdAdd, MdImage } from "react-icons/md";
 import { Input } from "../ui/input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { imageGenerationAPIs, ImageStyles } from "@/constants";
-import { unsplashAPi } from "@/apiClients/unsplashClient";
+import { getImage } from "@/apiClients/unsplashClient";
 import { IoMdDownload } from "react-icons/io";
 import {
   HoverCard,
@@ -102,8 +102,11 @@ const ImageGeneration = () => {
   return (
     <div className="">
       <div className="flex mt-8 gap-8 overflow-hidden ">
+
+        
+        
         {/* Editor */}
-        <div className="w-full min-h-[70vh] max-h-[70vh] overflow-y-auto custom-scrollbar">
+        <div className="w-full min-h-[70vh] max-h-[70vh] overflow-y-auto custom-scrollbar border">
           {
             editor ?
               <EditorContent editor={editor}
@@ -130,6 +133,7 @@ const ImageGeneration = () => {
           )}
 
         </div>
+
         {/* Forms */}
         <div className="w-1/2 border-l pl-2">
           <div>
@@ -228,8 +232,8 @@ const ImageGeneration = () => {
 
           </div>
         </div>
-        {/* Image Pannl */}
-        <div className={`w-[1200px] relative`}>
+         {/* Image Pannl */}
+         <div className={`w-full relative`}>
           {
             selectedImage ?
               loading ?
@@ -245,7 +249,6 @@ const ImageGeneration = () => {
 
         </div>
 
-        
       </div>
 
       <div className=" flex justify-center items-center  ">
@@ -321,7 +324,7 @@ function ImageGenerator({
   const [prompt, setPrompt] = useState('')
   async function handleImageGeneration() {
     setLoading(true);
-    const res = await unsplashAPi.getImage(`${prompt} ${selectedText}`, imageStyle, aspectRatios[Number(selectedImageAspectRatio)].query)
+    const res = await getImage(`${prompt} ${selectedText}`, imageStyle, aspectRatios[Number(selectedImageAspectRatio)].query)
     setSelectedImage(res.urls.regular)
     await new Promise((resolve) => setTimeout(resolve, 2000));
     setLoading(false)
@@ -387,7 +390,7 @@ function ImageLoader() {
       <Skeleton className="w-full h-[350px] flex justify-center items-center" >
         <div className="flex flex-col items-center justify-center">
           <MdImage className="text-muted-foreground" size={100} />
-          <p className="text-sm text-muted-foreground" >Images will appear here </p>
+          {/* <p className="text-sm text-muted-foreground" >Images will appear here </p> */}
         </div>
 
       </Skeleton>

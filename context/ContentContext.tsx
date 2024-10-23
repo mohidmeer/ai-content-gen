@@ -19,13 +19,10 @@ const ContentContext = createContext<ContentContextProps | undefined>(undefined)
 
 export const ContentProvider = ({ children }: { children: ReactNode }) => {
     const [content, setContent] = useState<string>(`<h2>Why Drinking Water is Essential</h2>
-  
-                  <p>Did you know that drinking water is one of the easiest ways to improve your health?</p>
-  
-                  <p>Water helps keep your skin glowing, your energy levels high, and even boosts your mood throughout the day.</p>
-                 
-  
-                   `);
+                                                    <p>Did you know that drinking water is one of the easiest ways to improve your health?</p>
+
+                                                    <p>The water is basic necessisty of life throughout evolution</p>
+                                                 `);
     const [step, setStep] = useState<number>(3);
     const [progress, setProgress] = useState<number>(22);
     const [images, setImages] = useState<string[]>([]);

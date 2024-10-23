@@ -1,6 +1,14 @@
+'use server'
+const fs = require('fs');
+const path = require('path');
+
+import { uploadToGCS } from '@/actions/storage.actions';
 import axios from 'axios';
 
-const ACCESS_KEY = process.env.NEXT_PUBLIC_11LAB_KEY;
+const ACCESS_KEY = process.env.ELEVENLAB_KEY;
+
+
+// const voiceCache = {};
 
 const elevenLabsClient = axios.create({
     baseURL: 'https://api.elevenlabs.io/v1',
@@ -11,11 +19,7 @@ const elevenLabsClient = axios.create({
     },
 })
 
-
-
-export const elevenlabApi = {
-
-    getVoices: async function () {
+ export const getVoices = async function () {
         try {
             const response = await elevenLabsClient.get('/voices');
             const voices = response.data.voices.map((voice: any) => ({
@@ -30,23 +34,47 @@ export const elevenlabApi = {
 
             console.error(error);
         }
-    },
+    }
 
-    generateVoice: async function ( text:string, voice_id:string ) {
+export const  generateVoice = async function ( text:string, voice_id:string ) {
+
+    return 'https://storage.googleapis.com/bucket-quickstart_ai-content-gen-439516/audio/mp3/1d16b47b-81a9-4429-a9a1-e6972f7edeb4.mp3' ;
 
         try {
-            const response = await elevenLabsClient.post('/text-to-speech/'+voice_id, {
-                text: text,
-            });
-            console.log(response.data)
-            const audioUrl = response.data.audio_url;
-            return audioUrl;
+            
+                const response = await elevenLabsClient.post('/text-to-speech/'+voice_id, 
+                    {
+                        text: text
+                    
+                    } ,
+
+                    {
+                        
+                        responseType: 'arraybuffer', 
+                        headers: {
+                            'Accept': 'audio/mpeg', 
+                        },
+                        
+                    },
+                
+                );
+
+           
+            const buffer = Buffer.from(response.data);               
+
+            const audioUrl = await uploadToGCS(buffer, response.headers['content-type']);
+
+            console.log(audioUrl)
+
+            return audioUrl ;
+
         } catch (error) {
+            
             console.log(error);
+        
         }
     }
 
 
-}
 
 

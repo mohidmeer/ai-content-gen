@@ -11,7 +11,16 @@ declare type Voice =  {
   preview_url: string;
 }
 
+interface CharacterData {
+  characters: string[];
+  character_start_times_seconds: number[];
+  character_end_times_seconds: number[];
+}
 
+interface WordTimestamps {
+  words: string[];
+  timestamps: number[];
+}
 
 
 declare type SearchParamProps = {
