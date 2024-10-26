@@ -19,6 +19,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
 import { EditorSkeleton } from "../Editor/EditorSkeleton";
+import { FaTrash } from "react-icons/fa6";
 
 
 const aspectRatios = [
@@ -32,49 +33,41 @@ const aspectRatios = [
 
 const ImageGeneration = () => {
 
-  const { step, setStep, content, setContent, progress, setProgress } = useContent();
+  const { content } = useContent();
 
   const [loading, setLoading] = useState(false);
-
   const [selectionCoords, setSelectionCoords] = useState(null);
   const [isTextSelected, setIsTextSelected] = useState(false);
   const [selectedText, setSelectedText] = useState(false);
-
   const [ImageStyle, setImageStyle] = useState('photorealistic');
   const [selectedImage, setSelectedImage] = useState();
-
   const [selectedImageGeneration, setSelectedImageGeneration] = useState('0')
   const [selectedImageAspectRatio, setSelectedImageAspectRatio] = useState('1')
-
-  useEffect(() => {
-
-    async function setContent() {
-      editor!.commands.setContent(content);
-    }
-    if (editor && content) {
-      setContent();
-    }
-  }, [content]);
-
-  useEffect(() => {
-    if (step == 2) {
-      setProgress(40)
-    }
-  }, [step])
-
   const editorRef = useRef(null);
+
+  const editor = useEditor({
+    immediatelyRender: false,
+    content: content,
+    editable: false,
+    extensions: [
+      StarterKit,
+
+    ],
+  })
+
+
 
   const handleMouseUp = () => {
     const selection = window.getSelection();
-    const selectedText = selection.toString();
+    const selectedText = selection!.toString();
 
     if (selectedText.length > 0) {
-      const range = selection.getRangeAt(0);
+      const range = selection!.getRangeAt(0);
       const rect = range.getBoundingClientRect();
       setSelectedText(selectedText);
 
 
-      if (editorRef.current && editorRef.current.contains(selection.anchorNode)) {
+      if (editorRef.current && editorRef.current.contains(selection!.anchorNode)) {
         setSelectionCoords({
           top: rect.top + window.scrollY - 40,
           left: rect.left + window.scrollX,
@@ -89,24 +82,12 @@ const ImageGeneration = () => {
     }
   };
 
-  const editor = useEditor({
-    immediatelyRender: false,
-    editable: false,
-    content: content,
-    extensions: [
-      StarterKit,
-
-    ],
-  })
 
   return (
     <div className="">
       <div className="flex mt-8 gap-8 overflow-hidden ">
-
-        
-        
         {/* Editor */}
-        <div className="w-full min-h-[70vh] max-h-[70vh] overflow-y-auto custom-scrollbar border">
+        <div className="w-full min-h-[50vh] max-h-[50vh] overflow-y-auto custom-scrollbar border">
           {
             editor ?
               <EditorContent editor={editor}
@@ -232,8 +213,8 @@ const ImageGeneration = () => {
 
           </div>
         </div>
-         {/* Image Pannl */}
-         <div className={`w-full relative`}>
+        {/* Image Pannl */}
+        <div className={`w-full relative`}>
           {
             selectedImage ?
               loading ?
@@ -297,7 +278,7 @@ function SelectedImage({ selectedImage }: { selectedImage: string }) {
       />
       <div className="w-full h-full flex justify-center items-center  ">
         <div className="flex-col justify-center items-center backdrop-blur-2xl    p-4 group-hover:flex hidden rounded-md ">
-          <MdAdd size={52} className="text-primary  spin-once  duration-500" onClick={()=>{setImages((prev)=>([...prev,selectedImage])) }} />
+          <MdAdd size={52} className="text-primary  spin-once  duration-500" onClick={() => { setImages((prev) => ([...prev, selectedImage])) }} />
           <p>Add to Timeline</p>
         </div>
       </div>
@@ -354,7 +335,7 @@ function ImageGenerator({
 
 
 function ImageTimeLine() {
-  const { images } = useContent();
+  const { images,setImages } = useContent();
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -365,14 +346,27 @@ function ImageTimeLine() {
     e.preventDefault();
     scrollContainer.scrollLeft += e.deltaY;
   };
+  const handleRemove = (index:any) => {
+    setImages((prevImages) => [
+        ...prevImages.slice(0, index),    // Elements before the target index
+        ...prevImages.slice(index + 1)    // Elements after the target index
+    ]);
+};
 
   return (
-    <div ref={scrollRef} onWheel={handleWheel} className="p-1 border   flex gap-2  overflow-x-auto overflow-y-hidden custom-scrollbar  my-4  w-[85vw] select-none ">
+    <div ref={scrollRef} onWheel={handleWheel} className="p-1 border   flex gap-2  overflow-x-auto overflow-y-hidden custom-scrollbar  my-4  w-[90vw] select-none ">
       {images.map((i, z) => (
-        <div key={z} className="relative h-[60px] bg-primary/10  w-[60px] flex-shrink-0 ">
-          <Image alt="" layout="fill" src={i} style={{ objectFit: 'cover' }} />
-          <p className="mt-1 ml-1">{z + 1}</p>
-
+        <div key={z} className="relative h-[100px] bg-primary/10 w-[100px] flex-shrink-0">
+          <Image alt="" layout="fill" className="cursor-pointer -z-5" src={i} style={{ objectFit: 'cover' }} />
+         
+          <p className="absolute top-1 left-1 text-primary-foreground  font-bold bg-primary  px-2 z-10">
+            {z + 1}
+          </p>
+          <FaTrash  
+            className="absolute bottom-1 right-1 text-destructive-foreground  p-1 z-10 cursor-pointer bg-destructive "
+            size={20} // Adjust icon size as needed
+            onClick={() => handleRemove(z)} // Trigger your remove function here
+          />
         </div>
       ))}
     </div>

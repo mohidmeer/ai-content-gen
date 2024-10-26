@@ -73,3 +73,16 @@ declare type SearchParamProps = {
   declare interface CategoryProps {
     category: CategoryCount;
   }
+
+  declare namespace JSX {
+    interface IntrinsicElements {
+      'rendley-video-editor': {
+        id?: string;
+        licensename?: string;
+        licensekey?: string;
+        theme?: string;
+        style?: React.CSSProperties;
+        // Add more props if needed
+      };
+    }
+  }

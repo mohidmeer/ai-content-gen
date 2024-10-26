@@ -12,10 +12,10 @@ import { BiLoader, BiLoaderAlt} from 'react-icons/bi';
 import { extractWordsAndTimestamps, getCSSVariable, soudnPlaybackTextObject } from '@/lib/utils';
 const VoiceGeneration = () => {
 
-  const { content, setProgress, voices } = useContent();
+  const { content, voices,setGeneratedAudio,generatedAudio } = useContent();
   const [selectedVoice, setSelectedVoice] = useState(voices![0])
   const [loading, setLoading] = useState(false)
-  const [generatedAudio, setGeneratedAudio] = useState(null)
+  
 
   const editorRef = useRef(null)
 
@@ -23,13 +23,10 @@ const VoiceGeneration = () => {
 
   async function getGeneratedAudio() {
     setLoading(true)
-    console.log(editor!.getText())
     const audioUrl = await generateVoice(editor!.getText(), selectedVoice.id)
     setGeneratedAudio(audioUrl)
     const res =  extractWordsAndTimestamps(soudnPlaybackTextObject)
-    console.log(res)
 
-    
     setLoading(false)
   }
 
@@ -82,6 +79,12 @@ const VoiceGeneration = () => {
       }
     }
   };
+  useEffect(()=>{
+    if(editor){
+      editor!.commands.setContent(content);
+    }
+  },[content])
+
   const editor = useEditor({
     immediatelyRender: false,
     editable: false,
@@ -92,13 +95,12 @@ const VoiceGeneration = () => {
     ],
   })
 
-  useEffect(() => {
-    setProgress(70)
-  })
+  
 
   useEffect(()=>{
     selectTextByIndex(textSelection.start,textSelection.end)
   },[textSelection])
+
 
 
   return (
@@ -155,7 +157,7 @@ const VoiceGeneration = () => {
         generatedAudio ? 
           <VoiceTimeLine textSelection={textSelection} setTextSelection={setTextSelection}   generatedAudio={generatedAudio} />
           :
-          <div className='h-[160px] w-full p-2 my-2 animate-pulse bg-primary/20' />
+          <div className='h-[160px] w-full p-2 my-2 animate-pulse bg-primary/10' />
       }
     </div>
   )

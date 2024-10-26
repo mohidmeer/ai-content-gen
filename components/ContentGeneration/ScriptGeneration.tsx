@@ -26,14 +26,8 @@ const formSchema = z.object({
 export default function ScriptGeneration() {
 
     const [isLodaing, setIsLoading] = useState(false)
-    const { content, setContent,setProgress} = useContent();
+    const {setContent,} = useContent();
 
-
-      useEffect(()=>{
-        if (content){
-            setProgress(25)
-        }
-      },[content])
 
     
   
@@ -53,20 +47,14 @@ export default function ScriptGeneration() {
     async function onSubmit(values: z.infer<typeof formSchema>) {
       setIsLoading(true)
       setContent(``)
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       setContent(` <h2>Why Drinking Water is Essential</h2>
   
                   <p>Did you know that drinking water is one of the easiest ways to improve your health?</p>
   
                   <p>Water helps keep your skin glowing, your energy levels high, and even boosts your mood throughout the day.</p>
   
-                  <h3>Stay Hydrated, Stay Healthy</h3>
-  
-                  <p>Whether you're working out, at work, or just relaxing, staying hydrated helps your body function at its best.</p>
-  
-                  <p>So next time, grab a bottle of water and take a sip. It’s a simple habit that can make a big difference.</p>
-  
-                  <p>Cheers to a healthier, happier you!</p> `)
+                   `)
       setIsLoading(false)
     }
   

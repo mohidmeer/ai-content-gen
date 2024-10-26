@@ -13,33 +13,20 @@ import { useContent } from '@/context/ContentContext';
 
 const ContentTextEditor = () => {
 
-    const { step, content, setContent,setProgress } = useContent();
+    const { content, setContent } = useContent();
     const [loading, setLoading] = useState(false)
 
-    useEffect(() => {
-        if (step == 1 && content) {
-          setProgress(25)
-        }
-      }, [content])
-
-
 
     useEffect(() => {
-        async function setContent() {
-            setLoading(true)    
-            await new Promise((resolve) => setTimeout(resolve, 1000));          
+        if (editor) {
             editor!.commands.setContent(content);
-            setLoading(false)
-        }
-        if (editor && content) {
-            setContent();
         }
     }, [content]);
 
 
-
     const editor = useEditor({
         immediatelyRender: false,
+        content:content,
         extensions: [
             StarterKit,
             TextAlign.configure({
@@ -52,6 +39,18 @@ const ContentTextEditor = () => {
             }),
 
         ],
+        onUpdate: ({ editor }) => {
+            const htmlContent = editor.getHTML();
+            const textContent = editor.getText();
+
+            if (textContent.trim() === '') {
+                setContent('');
+            } else {
+                setContent(htmlContent);
+            }
+
+            
+        },
     })
 
     return (
@@ -63,9 +62,9 @@ const ContentTextEditor = () => {
                     <>
                         <EditorMenuBar editor={editor} />
                         <EditorContent editor={editor}
-                       
+
                         />
-                        
+
                     </>
             }
         </>

@@ -2,19 +2,14 @@ import { Skeleton } from "../ui/skeleton";
 
 export const EditorSkeleton = () => {
     return (
-        <div className="flex flex-col  space-y-4 bg-card rounded-lg">
+        <div className="flex flex-col  space-y-4 bg-card rounded-lg ">
             {/* Toolbar */}
             <div className="flex space-x-2">
                 <Skeleton className="w-10 h-10" />
                 <Skeleton className="w-10 h-10" />
                 <Skeleton className="w-10 h-10" />
                 <Skeleton className="w-10 h-10" />
-                <Skeleton className="w-10 h-10" />
-                <Skeleton className="w-10 h-10" />
-                <Skeleton className="w-10 h-10" />
-                <Skeleton className="w-10 h-10" />
-                <Skeleton className="w-10 h-10" />
-                <Skeleton className="w-10 h-10" />
+                
             </div>
             {/* Content Area */}
             <div className="flex flex-col space-y-2">
