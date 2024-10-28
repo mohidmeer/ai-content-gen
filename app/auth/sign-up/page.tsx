@@ -9,14 +9,13 @@ import { Button } from "@/components/ui/button"
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { signIn } from "@/auth";
+// import { signIn } from "@/auth";
 import Link from "next/link";
 
 
@@ -33,7 +32,7 @@ export default function Page() {
         email: z.string().email("Provide a correct email address"),
         name: z.string().min(3,{message:"must have at least 3 characters"}),
         
-    }).refine((data:any) => data.password === data.cpassword, {
+    }).refine((data:{password:string,cpassword:string}) => data.password === data.cpassword, {
         path: ['cpassword'],
         message: "Passwords don't match.",
       })

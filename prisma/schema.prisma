@@ -63,19 +63,22 @@ model VerificationToken {
  
   @@unique([identifier, token])
 }
- 
-// // Optional for WebAuthn support
-// model Authenticator {
-//   credentialID         String  @id @map("_id")
-//   userId               String  @db.ObjectId
-//   providerAccountId    String
-//   credentialPublicKey  String
-//   counter              Int
-//   credentialDeviceType String
-//   credentialBackedUp   Boolean
-//   transports           String?
- 
-//   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
-//   @@unique([userId, credentialID])
-// }
+
+enum HistoryType {
+  CONTENT_GENERATION
+  VOICE_GENERATION
+  IMAGE_GENERATION
+}
+
+model History {
+
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String   @db.ObjectId
+  type         HistoryType
+  step         Int @default(1)
+  content      String?  
+  imageUrl     String[]
+  voiceUrl     String?  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

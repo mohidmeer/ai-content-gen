@@ -234,7 +234,7 @@ const VoiceTimeLine: React.FC<AudioPlayerProps> = ({generatedAudio,setTextSelect
     "health?"
 ]
 
-const calculateSelectionRange = (index) => {
+const calculateSelectionRange = (index:number) => {
   let start = 0;
   
   for (let i = 0; i < index; i++) {
@@ -247,7 +247,7 @@ const calculateSelectionRange = (index) => {
   return { start, end };
 };
 
-const findClosestTimestampIndex = (currentTime) => {
+const findClosestTimestampIndex = (currentTime:number) => {
   let closestIndex = 0;
   let smallestDiff = Math.abs(timestamps[0] - currentTime);
 

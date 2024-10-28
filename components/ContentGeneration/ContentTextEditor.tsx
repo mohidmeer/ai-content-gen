@@ -14,7 +14,7 @@ import { useContent } from '@/context/ContentContext';
 const ContentTextEditor = () => {
 
     const { content, setContent } = useContent();
-    const [loading, setLoading] = useState(false)
+    const [loading] = useState(false)
 
 
     useEffect(() => {

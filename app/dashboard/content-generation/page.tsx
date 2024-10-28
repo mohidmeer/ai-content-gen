@@ -1,26 +1,34 @@
-"use client"
-import Header from '@/components/Header'
-import React, { useEffect, useState } from 'react'
+"use client"; 
+import Header from '@/components/Header';
+import React, { Suspense, useEffect } from 'react';
 import ProgressBar from '@/components/ProgressBar';
 import { Button } from '@/components/ui/button';
-import { MdArrowBackIos, } from 'react-icons/md';
+import { MdArrowBackIos } from 'react-icons/md';
 import { TbPlayerTrackNextFilled } from "react-icons/tb";
-
 import ImageGeneration from '@/components/ContentGeneration/ImageGeneration';
 import { useContent } from '@/context/ContentContext';
 import ScriptGeneration from '@/components/ContentGeneration/ScriptGeneration';
 import VoiceGeneration from '@/components/ContentGeneration/VoiceGeneration';
 import { useRouter, useSearchParams } from 'next/navigation';
 import DownloadAssets from '@/components/ContentGeneration/DownloadAssets';
+import useTrackHistory from '@/hooks/useHistory';
 
 
+export default function Content() {
+  return (
+    <Suspense fallback={<div className='h-screen'></div>}>
+      <MainContent />
+    </Suspense>
+  );
+};
 
-const Content = () => {
-
+const MainContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const stepParam = searchParams.get('step');
   const currentStep = parseInt(stepParam || '1', 10);
+
+  useTrackHistory();
 
   const { content, progress, setProgress, images, generatedAudio } = useContent();
 
@@ -47,8 +55,8 @@ const Content = () => {
     updateProgress();
     const queryParams = new URLSearchParams({ step: currentStep.toString() });
     router.push(`?${queryParams.toString()}`);
-
   }, [currentStep, content, images, generatedAudio, setProgress, router]);
+
 
   const getTitleForStep = () => {
     switch (currentStep) {
@@ -70,49 +78,32 @@ const Content = () => {
       <Header title={getTitleForStep()} />
       <ProgressBar progress={progress} />
       <NavigationButtons currentStep={currentStep} content={content} />
-      <div className='flex flex-col '>
-        <div className='overflow-hidden'>
-          {currentStep === 1 && <ScriptGeneration />}
-          {currentStep === 2 && <ImageGeneration />}
-          {currentStep === 3 && <VoiceGeneration />}
-          {currentStep === 4 && <DownloadAssets />}
-        </div>
+      <div className='flex flex-col overflow-hidden'>
 
-        {/* <div className='overflow-hidden' style={{ display: step === 2 ? 'block' : 'none' }}>
-            <ImageGeneration />
-          </div>
-
-          <div className='overflow-hidden' style={{ display: step === 3 ? 'block' : 'none' }}>
-            <VoiceGeneration />
-          </div> */}
-
-
-
+        <StepContent currentStep={currentStep} />
 
       </div>
     </>
-  )
-}
+  );
+};
 
-export default Content
-
-
-const NavigationButtons = ({ currentStep, content }: { currentStep: number, content: string }) => {
-
-  const router = useRouter()
+const NavigationButtons = ({ currentStep, content }
+  : { currentStep: number, content: string }) => {
+  const router = useRouter();
 
   const handleNext = () => {
-    const nextStep = currentStep + 1; // Increment step
-    router.push(`?step=${nextStep}`); // Push the new step into query params
+    const nextStep = currentStep + 1;
+    router.push(`?step=${nextStep}`);
   };
 
   const handleBack = () => {
-    const prevStep = currentStep - 1; // Decrement step, ensuring it does not go below 1
+    const prevStep = currentStep - 1;
     if (prevStep >= 1) {
-      router.push(`?step=${prevStep}`); // Push the previous step into query params
+      router.push(`?step=${prevStep}`);
     }
   };
-  if (currentStep == 1) {
+
+  if (currentStep === 1) {
     return (
       <div className='flex justify-end mt-auto'>
         <Button className='mt-4 gap-2 w-1/5' disabled={!content} onClick={handleNext}>
@@ -131,22 +122,29 @@ const NavigationButtons = ({ currentStep, content }: { currentStep: number, cont
           Go Back
         </Button>
         {
-          currentStep == 4 ? '' : <Button className='gap-2 w-1/5' disabled={!content} onClick={handleNext}>
+          currentStep === 4 ? '' : <Button className='gap-2 w-1/5' disabled={!content} onClick={handleNext}>
             Next
             <TbPlayerTrackNextFilled />
           </Button>
         }
-
       </div>
     );
   }
 
-  return null; // Fallback in case no buttons are rendered
+  return null;
 };
 
-
-
-
-
-
-
+const StepContent = ({ currentStep }: { currentStep: number }) => {
+  switch (currentStep) {
+    case 1:
+      return <ScriptGeneration />;
+    case 2:
+      return <ImageGeneration />;
+    case 3:
+      return <VoiceGeneration />;
+    case 4:
+      return <DownloadAssets />;
+    default:
+      return null;
+  }
+};

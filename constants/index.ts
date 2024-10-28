@@ -1,4 +1,3 @@
-import { TbScriptPlus } from "react-icons/tb";
 import { IconType } from "react-icons/lib";
 import { TbFileDescription } from "react-icons/tb";
 import { RiImageAddLine } from "react-icons/ri";
@@ -271,7 +270,7 @@ export const ImageStyles = [
   ];
 
 
- export const imageGenerationAPIs:{id:number,label:string,value:string,description:string,isAi:boolean, Icon: React.FC; }[] = [
+ export const imageGenerationAPIs:{id:number,label:string,value:string,description:string,isAi:boolean, Icon: React.FC | null; }[] = [
     {
       id:0,
       label: "DALL-E 2",

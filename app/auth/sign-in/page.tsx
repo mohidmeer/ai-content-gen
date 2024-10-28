@@ -4,26 +4,26 @@ import { FaGoogle } from "react-icons/fa";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-
+import { useSession ,SessionProvider } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { signIn } from "@/auth";
+import { auth } from "@/auth";
 import Link from "next/link";
+import { handleSignIn } from "@/actions/auth.actions";
+
+
 
 
 
 export default function Page() {
-
-
 
     const formSchema = z.object({
         password: z.string().min(6, {
@@ -95,7 +95,7 @@ export default function Page() {
                     <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
                 </div>
             </div>
-            <Button className="w-full mt-4 flex gap-2" >
+            <Button className="w-full mt-4 flex gap-2" onClick={()=>{ handleSignIn()}} >
                 <FaGoogle size={18} />
                 Sign In with Google
             </Button>

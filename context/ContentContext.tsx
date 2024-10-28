@@ -5,8 +5,8 @@ import { createContext, useContext, useState, ReactNode, Dispatch, SetStateActio
 interface ContentContextProps {
     content: string;
     setContent: Dispatch<SetStateAction<string>>;
-    step: number;
-    setStep: Dispatch<SetStateAction<number>>;
+    // step: number;
+    // setStep: Dispatch<SetStateAction<number>>;
     progress: number;
     setProgress: Dispatch<SetStateAction<number>>;
     images: string[];
@@ -14,6 +14,9 @@ interface ContentContextProps {
     voices?:Voice[];
     generatedAudio?: string | null;
     setGeneratedAudio: Dispatch<SetStateAction<string | null>>;
+
+    isSavingHistory:boolean;
+    setIsSavingHistory:Dispatch<SetStateAction<boolean>>;
 }
 
 const ContentContext = createContext<ContentContextProps | undefined>(undefined);
@@ -23,7 +26,7 @@ export const ContentProvider = ({ children }: { children: ReactNode }) => {
     const [content, setContent] = useState<string>( `<h2>Why Drinking Water is Essential</h2>
         <p>Did you know that drinking water is one of the easiest ways to improve your health?</p>
         <p>Water helps keep your skin glowing, your energy levels high, and even boosts your mood throughout the day.</p>`);
-    const [step, setStep] = useState<number>(1);
+    // const [step, setStep] = useState<number>(1);
     const [progress, setProgress] = useState<number>(22);
     // const [images, setImages] = useState<string[]>([]);
     const [images, setImages] = useState<string[]>([
@@ -280,10 +283,13 @@ export const ContentProvider = ({ children }: { children: ReactNode }) => {
     // const [generatedAudio, setGeneratedAudio] = useState<string | null>(null);
     const [generatedAudio, setGeneratedAudio] = useState<string | null>('https://storage.googleapis.com/bucket-quickstart_ai-content-gen-439516/audio/mp3/1d16b47b-81a9-4429-a9a1-e6972f7edeb4.mp3');
 
+    const [isSavingHistory,setIsSavingHistory] = useState<boolean>(false)
+
     return (
         <ContentContext.Provider value={{ 
             content, setContent, 
-            step, setStep, 
+            // step, setStep,
+            isSavingHistory,setIsSavingHistory, 
             progress, setProgress,
             images,setImages,
             voices,

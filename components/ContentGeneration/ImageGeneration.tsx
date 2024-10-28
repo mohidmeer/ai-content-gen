@@ -1,7 +1,7 @@
 'use client';
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { useEffect, useRef, useState } from "react";
+import {  useRef, useState } from "react";
 import { Button } from "../ui/button";
 import { BiLoader, BiSolidImageAdd } from "react-icons/bi";
 import { useContent } from "@/context/ContentContext";
@@ -30,21 +30,27 @@ const aspectRatios = [
 ]
 
 
+interface SelectionCoords {
+  top: number;
+  left: number;
+}
+
 
 const ImageGeneration = () => {
 
   const { content } = useContent();
 
   const [loading, setLoading] = useState(false);
-  const [selectionCoords, setSelectionCoords] = useState(null);
+  // const [selectionCoords, setSelectionCoords] = useState(null);
+  const [selectionCoords, setSelectionCoords] = useState<SelectionCoords | null>(null); // Update the type here
   const [isTextSelected, setIsTextSelected] = useState(false);
-  const [selectedText, setSelectedText] = useState(false);
+  const [selectedText, setSelectedText] = useState('');
   const [ImageStyle, setImageStyle] = useState('photorealistic');
   const [selectedImage, setSelectedImage] = useState();
   const [selectedImageGeneration, setSelectedImageGeneration] = useState('0')
   const [selectedImageAspectRatio, setSelectedImageAspectRatio] = useState('1')
-  const editorRef = useRef(null);
-
+  // const editorRef = useRef(null);
+  const editorRef = useRef<HTMLDivElement | null>(null);
   const editor = useEditor({
     immediatelyRender: false,
     content: content,
@@ -57,30 +63,30 @@ const ImageGeneration = () => {
 
 
 
-  const handleMouseUp = () => {
-    const selection = window.getSelection();
-    const selectedText = selection!.toString();
+    const handleMouseUp = () => {
+      const selection = window.getSelection();
+      const selectedText = selection!.toString();
 
-    if (selectedText.length > 0) {
-      const range = selection!.getRangeAt(0);
-      const rect = range.getBoundingClientRect();
-      setSelectedText(selectedText);
+      if (selectedText.length > 0) {
+        const range = selection!.getRangeAt(0);
+        const rect = range.getBoundingClientRect();
+        setSelectedText(selectedText);
 
 
-      if (editorRef.current && editorRef.current.contains(selection!.anchorNode)) {
-        setSelectionCoords({
-          top: rect.top + window.scrollY - 40,
-          left: rect.left + window.scrollX,
-        });
-        setIsTextSelected(true);
-        // setIsTextSelected(selectedText);
+        if (editorRef.current && editorRef.current.contains(selection!.anchorNode)) {
+          setSelectionCoords({
+            top: rect.top + window.scrollY - 40,
+            left: rect.left + window.scrollX,
+          });
+          setIsTextSelected(true);
+          // setIsTextSelected(selectedText);
+        } else {
+          setIsTextSelected(false);
+        }
       } else {
         setIsTextSelected(false);
       }
-    } else {
-      setIsTextSelected(false);
-    }
-  };
+    };
 
 
   return (

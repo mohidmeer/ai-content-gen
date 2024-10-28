@@ -9,9 +9,8 @@ const storage = new Storage({
     credentials: googleCloudCreds
       ,
 });
-const bucketName = process.env.GOOGLE_CLOUD_BUCKET_NAME;
 
-// Define the MIME type mapping
+
 interface MimeTypeInfo {
     folder: string;
     extension: string;
@@ -38,7 +37,7 @@ export async function uploadToGCS(buffer: Buffer, mimeType: string): Promise<str
     const fileName = `${uuidv4()}.${extension}`;
 
 
-    const file = storage.bucket(bucketName).file(`${folder}/${fileName}`);
+    const file = storage.bucket(process.env.GOOGLE_CLOUD_BUCKET_NAME!).file(`${folder}/${fileName}`);
 
     try {
         await file.save(buffer, {
@@ -48,7 +47,7 @@ export async function uploadToGCS(buffer: Buffer, mimeType: string): Promise<str
         
         await file.makePublic();
         
-        return `https://storage.googleapis.com/${bucketName}/${folder}/${fileName}`;
+        return `https://storage.googleapis.com/${process.env.GOOGLE_CLOUD_BUCKET_NAME}/${folder}/${fileName}`;
         
     } catch (error) {
         console.error('Error uploading to Google Cloud Storage:', error);

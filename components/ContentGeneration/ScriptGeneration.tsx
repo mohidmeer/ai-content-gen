@@ -1,5 +1,5 @@
 'use client';
-import React, {  useEffect, useState } from 'react'
+import React, {  useState } from 'react'
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Textarea } from '@/components/ui/textarea';
 import { Slider } from '@/components/ui/slider';

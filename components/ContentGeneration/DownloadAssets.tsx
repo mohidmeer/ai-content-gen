@@ -9,7 +9,7 @@ import { Button } from '../ui/button';
 import JSZip from 'jszip';
 
 
-const getExtensionFromMime = (mimeType:any) => {
+const getExtensionFromMime = (mimeType:string) => {
     if (mimeType.startsWith('image/')) {
       const extension = mimeType.split('/')[1];
       return  extension
@@ -115,7 +115,7 @@ const ImageGallery = () => {
     )
 };
 
-const EditorBox = ({editor}) => {
+const EditorBox = ({editor}:{editor:any}) => {
 
     
     return (
@@ -141,8 +141,6 @@ const EditorBox = ({editor}) => {
 const AudioBox = ({ }) => {
 
     const { generatedAudio } = useContent();
-    const [isReady, setIsReady] = useState<boolean>(false);
-    const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
     useEffect(() => {
         const waveSurferInstance = WaveSurfer.create({
@@ -155,21 +153,21 @@ const AudioBox = ({ }) => {
         });
 
 
-        waveSurferInstance.load(generatedAudio);
+        waveSurferInstance.load(generatedAudio!);
 
 
         waveSurferInstance.on('ready', () => {
-            setIsReady(true);
+           
         });
 
 
 
         waveSurferInstance.on('click', () => {
             if (waveSurferInstance.isPlaying()) {
-                setIsPlaying(false)
+              
                 waveSurferInstance.pause()
             } else {
-                setIsPlaying(true)
+           
                 waveSurferInstance.play()
             }
         })
@@ -177,7 +175,7 @@ const AudioBox = ({ }) => {
 
         waveSurferInstance.on('finish', () => {
             waveSurferInstance.seekTo(0)
-            setIsPlaying(false);
+            
         });
 
 

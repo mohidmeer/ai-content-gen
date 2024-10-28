@@ -56,7 +56,7 @@ export default History
 function YoutubeLoader() {
 
 
-  let Loader = []
+  const Loader = []
 
   for (let i = 1; i < 15; i++) {
     Loader.push(
@@ -78,7 +78,7 @@ function YoutubeLoader() {
 }
 
 function TikTokLoader() {
-  let Loader = [];
+  const Loader = [];
 
   for (let i = 1; i <= 10; i++) {
     Loader.push(
