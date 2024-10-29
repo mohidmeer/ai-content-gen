@@ -23,8 +23,7 @@ interface WordTimestamps {
 }
 
 interface HistroyDetails {
-  id?:string;
-  userId: string; 
+  id?:string | null;
   content: string ;
   step: number;
   images: string[]; 

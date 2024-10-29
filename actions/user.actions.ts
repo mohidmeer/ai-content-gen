@@ -1,15 +1,16 @@
 'use server';
 
+import { auth } from "@/auth";
 import { prisma } from "@/prisma";
 
 export const saveHistoryToBD = async (history: HistroyDetails) => {
 
+  const userSession = await auth()
+
   try {
 
     if (history.id) {
-
-
-      const updatedHistory = await prisma.history.update({
+      let updatedHistory = await prisma.history.update({
         where: { id: history.id },
         data: {
           content: history.content,
@@ -18,15 +19,13 @@ export const saveHistoryToBD = async (history: HistroyDetails) => {
           voiceUrl: history.generatedAudio,
         },
       });
+      console.log('Executed same database id for history ')
       return updatedHistory.id;
-
-
     } else {
-
 
       const newHistory = await prisma.history.create({
         data: {
-          userId: history.userId,
+          userId: userSession?.user?.id!,
           type: 'CONTENT_GENERATION',
           step: history.step,
           content: history.content,
@@ -36,12 +35,32 @@ export const saveHistoryToBD = async (history: HistroyDetails) => {
       });
       return newHistory.id;
     }
-
-
-
   } catch (error) {
 
     console.log(error)
 
   }
-}  
+}
+
+
+export const getHistory = async () => {
+
+  const userSession = await auth()
+  try {
+    const data = await prisma.history.findMany({
+      where: {
+        userId: userSession?.user!.id,
+      },
+    });
+    console.log(data)
+    return data;
+
+
+  } catch (error) {
+
+    throw error
+
+  }
+
+
+}

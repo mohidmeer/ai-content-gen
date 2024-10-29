@@ -7,6 +7,8 @@ interface ContentContextProps {
     setContent: Dispatch<SetStateAction<string>>;
     // step: number;
     // setStep: Dispatch<SetStateAction<number>>;
+     // historyId:string | null;
+    // setHistoryId:Dispatch<SetStateAction<string | null>>;
     progress: number;
     setProgress: Dispatch<SetStateAction<number>>;
     images: string[];
@@ -17,6 +19,7 @@ interface ContentContextProps {
 
     isSavingHistory:boolean;
     setIsSavingHistory:Dispatch<SetStateAction<boolean>>;
+
 }
 
 const ContentContext = createContext<ContentContextProps | undefined>(undefined);
@@ -288,13 +291,14 @@ export const ContentProvider = ({ children }: { children: ReactNode }) => {
     return (
         <ContentContext.Provider value={{ 
             content, setContent, 
-            // step, setStep,
+      
             isSavingHistory,setIsSavingHistory, 
             progress, setProgress,
             images,setImages,
             voices,
             generatedAudio,
-            setGeneratedAudio 
+            setGeneratedAudio, 
+          
             }}>
             {children}
         </ContentContext.Provider>

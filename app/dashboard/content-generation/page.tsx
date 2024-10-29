@@ -9,9 +9,10 @@ import ImageGeneration from '@/components/ContentGeneration/ImageGeneration';
 import { useContent } from '@/context/ContentContext';
 import ScriptGeneration from '@/components/ContentGeneration/ScriptGeneration';
 import VoiceGeneration from '@/components/ContentGeneration/VoiceGeneration';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import DownloadAssets from '@/components/ContentGeneration/DownloadAssets';
 import useTrackHistory from '@/hooks/useHistory';
+import { createQueryString } from '@/lib/utils';
 
 
 export default function Content() {
@@ -27,6 +28,7 @@ const MainContent = () => {
   const searchParams = useSearchParams();
   const stepParam = searchParams.get('step');
   const currentStep = parseInt(stepParam || '1', 10);
+  const pathname = usePathname()
 
   useTrackHistory();
 
@@ -53,8 +55,7 @@ const MainContent = () => {
     };
 
     updateProgress();
-    const queryParams = new URLSearchParams({ step: currentStep.toString() });
-    router.push(`?${queryParams.toString()}`);
+    router.push(pathname + '?' + createQueryString('step',currentStep.toString(),searchParams))
   }, [currentStep, content, images, generatedAudio, setProgress, router]);
 
 
@@ -90,16 +91,18 @@ const MainContent = () => {
 const NavigationButtons = ({ currentStep, content }
   : { currentStep: number, content: string }) => {
   const router = useRouter();
+  const pathname = usePathname()
+  const searchParams = useSearchParams();
 
   const handleNext = () => {
     const nextStep = currentStep + 1;
-    router.push(`?step=${nextStep}`);
+    router.push(pathname + '?' + createQueryString('step',nextStep,searchParams))
   };
 
   const handleBack = () => {
     const prevStep = currentStep - 1;
     if (prevStep >= 1) {
-      router.push(`?step=${prevStep}`);
+      router.push(pathname + '?' + createQueryString('step',prevStep,searchParams))
     }
   };
 

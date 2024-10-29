@@ -405,4 +405,10 @@ export function extractWordsAndTimestamps(obj:ElevenLabCharacterData) : WordTime
   return { words, timestamps: wordTimestamps };
 }
 
+export const createQueryString =  (name: string, value: any,searchParams:any) => {
+  const params = new URLSearchParams(searchParams.toString())
+  params.set(name, value)
+
+  return params.toString()
+}
 
