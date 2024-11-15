@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
-import { EditorSkeleton } from '../Editor/EditorSkeleton'
+import { EditorSkeleton } from '../features/text-editor/EditorSkeleton'
 import { useContent } from '@/context/ContentContext';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -8,43 +8,43 @@ import WaveSurfer from 'wavesurfer.js'
 import { MdPause, MdPlayArrow } from 'react-icons/md';
 import { Button } from '../ui/button';
 import { PiSpeakerSimpleNoneFill } from "react-icons/pi";
-import { BiLoader, BiLoaderAlt} from 'react-icons/bi';
+import { BiLoader, BiLoaderAlt } from 'react-icons/bi';
 import { extractWordsAndTimestamps, getCSSVariable, soudnPlaybackTextObject } from '@/lib/utils';
 const VoiceGeneration = () => {
 
-  const { content, voices,setGeneratedAudio,generatedAudio } = useContent();
+  const { content, voices, setGeneratedAudio, generatedAudio } = useContent();
   const [selectedVoice, setSelectedVoice] = useState(voices![0])
   const [loading, setLoading] = useState(false)
-  
+
 
   const editorRef = useRef(null)
 
-  const [textSelection,setTextSelection] = useState({start:0,end:0})
+  const [textSelection, setTextSelection] = useState({ start: 0, end: 0 })
 
   async function getGeneratedAudio() {
     setLoading(true)
     const audioUrl = await generateVoice(editor!.getText(), selectedVoice.id)
     setGeneratedAudio(audioUrl)
-    const res =  extractWordsAndTimestamps(soudnPlaybackTextObject)
+    const res = extractWordsAndTimestamps(soudnPlaybackTextObject)
 
     setLoading(false)
   }
 
-  const selectTextByIndex = (startIndex:number, endIndex:number) => {
+  const selectTextByIndex = (startIndex: number, endIndex: number) => {
     if (editorRef.current) {
       const range = document.createRange();
       const selection = window.getSelection();
-      
+
       // Clear any existing selections
       selection?.removeAllRanges();
 
       let charCount = 0;
-      let startNode:any = null;
-      let endNode:any = null;
+      let startNode: any = null;
+      let endNode: any = null;
       let startOffset = 0;
       let endOffset = 0;
 
-      const walkTextNodes = (node:any) => {
+      const walkTextNodes = (node: any) => {
         if (node.nodeType === Node.TEXT_NODE) {
           const textLength = node.textContent.length;
 
@@ -79,11 +79,11 @@ const VoiceGeneration = () => {
       }
     }
   };
-  useEffect(()=>{
-    if(editor){
+  useEffect(() => {
+    if (editor) {
       editor!.commands.setContent(content);
     }
-  },[content])
+  }, [content, editorRef])
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -95,11 +95,10 @@ const VoiceGeneration = () => {
     ],
   })
 
-  
 
-  useEffect(()=>{
-    selectTextByIndex(textSelection.start,textSelection.end)
-  },[textSelection])
+  useEffect(() => {
+    selectTextByIndex(textSelection.start, textSelection.end)
+  }, [textSelection])
 
 
 
@@ -154,8 +153,8 @@ const VoiceGeneration = () => {
       </div>
       {/* Generated Voice */}
       {
-        generatedAudio ? 
-          <VoiceTimeLine textSelection={textSelection} setTextSelection={setTextSelection}   generatedAudio={generatedAudio} />
+        generatedAudio ?
+          <VoiceTimeLine textSelection={textSelection} setTextSelection={setTextSelection} generatedAudio={generatedAudio} />
           :
           <div className='h-[160px] w-full p-2 my-2 animate-pulse bg-primary/10' />
       }
@@ -170,12 +169,12 @@ export default VoiceGeneration
 
 interface AudioPlayerProps {
   generatedAudio: string;
-  textSelection: { start : number, end:number}
+  textSelection: { start: number, end: number }
   setTextSelection: (selection: { start: number; end: number }) => void;
 }
 
 
-const VoiceTimeLine: React.FC<AudioPlayerProps> = ({generatedAudio,setTextSelection
+const VoiceTimeLine: React.FC<AudioPlayerProps> = ({ generatedAudio, setTextSelection
 }) => {
   const [waveSurfer, setWaveSurfer] = useState<WaveSurfer | null>(null);
   const [isReady, setIsReady] = useState<boolean>(false);
@@ -189,7 +188,7 @@ const VoiceTimeLine: React.FC<AudioPlayerProps> = ({generatedAudio,setTextSelect
     4.458, 4.911, 4.946, 5.132, 5.178, 5.236, 5.271, 5.631, 5.666, 5.782,
     5.817, 6.211
   ];
- const words = [
+  const words = [
     "Why",
     " ",
     "Drinking",
@@ -232,35 +231,35 @@ const VoiceTimeLine: React.FC<AudioPlayerProps> = ({generatedAudio,setTextSelect
     "your",
     " ",
     "health?"
-]
+  ]
 
-const calculateSelectionRange = (index:number) => {
-  let start = 0;
-  
-  for (let i = 0; i < index; i++) {
-    start += words[i].length;
-  }
-  const end = (start + words[index].length);
+  const calculateSelectionRange = (index: number) => {
+    let start = 0;
 
-  console.log(start,end)
-
-  return { start, end };
-};
-
-const findClosestTimestampIndex = (currentTime:number) => {
-  let closestIndex = 0;
-  let smallestDiff = Math.abs(timestamps[0] - currentTime);
-
-  for (let i = 1; i < timestamps.length; i++) {
-    const diff = Math.abs(timestamps[i] - currentTime);
-    if (diff < smallestDiff) {
-      smallestDiff = diff;
-      closestIndex = i;
+    for (let i = 0; i < index; i++) {
+      start += words[i].length;
     }
-  }
+    const end = (start + words[index].length);
 
-  return closestIndex;
-};
+    console.log(start, end)
+
+    return { start, end };
+  };
+
+  const findClosestTimestampIndex = (currentTime: number) => {
+    let closestIndex = 0;
+    let smallestDiff = Math.abs(timestamps[0] - currentTime);
+
+    for (let i = 1; i < timestamps.length; i++) {
+      const diff = Math.abs(timestamps[i] - currentTime);
+      if (diff < smallestDiff) {
+        smallestDiff = diff;
+        closestIndex = i;
+      }
+    }
+
+    return closestIndex;
+  };
 
   useEffect(() => {
     const waveSurferInstance = WaveSurfer.create({
@@ -275,17 +274,17 @@ const findClosestTimestampIndex = (currentTime:number) => {
     try {
 
       waveSurferInstance.load(generatedAudio);
-      
+
     } catch (error) {
 
       throw error
-      
+
     }
 
     waveSurferInstance.on('ready', () => {
       setIsReady(true);
     });
-    
+
     waveSurferInstance.on('audioprocess', () => {
       const currentTime = waveSurferInstance.getCurrentTime();
       const closest = findClosestTimestampIndex(currentTime);

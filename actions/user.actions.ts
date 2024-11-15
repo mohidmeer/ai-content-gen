@@ -19,9 +19,9 @@ export const saveHistoryToBD = async (history: HistroyDetails) => {
           voiceUrl: history.generatedAudio,
         },
       });
-      console.log('Executed same database id for history ')
       return updatedHistory.id;
     } else {
+
 
       const newHistory = await prisma.history.create({
         data: {
@@ -52,15 +52,25 @@ export const getHistory = async () => {
         userId: userSession?.user!.id,
       },
     });
-    console.log(data)
     return data;
-
-
   } catch (error) {
 
     throw error
 
   }
-
-
 }
+
+export const getHistoryDetails = async (id: string) => {
+  try {
+    const history = await prisma.history.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
+    return history;
+  } catch (error) {
+    console.error("Error fetching history details:", error);
+    return null;
+  }
+};

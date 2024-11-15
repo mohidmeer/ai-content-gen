@@ -20,6 +20,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  
   return (
     <div className="flex">
       <SideBar />
@@ -28,6 +30,7 @@ export default function RootLayout({
 
         <div className="border-b p-2 w-full flex items-center">
           <div className="ml-auto flex items-center gap-2">
+            
             <Profile />
             <ThemeSwitch />
           </div>
@@ -89,7 +92,7 @@ function Profile() {
 
 interface IconWrapperProps {
   children: ReactNode;
-  size?: number; 
+  size?: number;
 }
 
 const IconWrapper: React.FC<IconWrapperProps> = ({ children, size = 20 }) => {

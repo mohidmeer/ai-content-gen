@@ -1,4 +1,4 @@
-import { Skeleton } from "../ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const EditorSkeleton = () => {
     return (
@@ -9,7 +9,7 @@ export const EditorSkeleton = () => {
                 <Skeleton className="w-10 h-10" />
                 <Skeleton className="w-10 h-10" />
                 <Skeleton className="w-10 h-10" />
-                
+
             </div>
             {/* Content Area */}
             <div className="flex flex-col space-y-2">

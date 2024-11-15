@@ -5,22 +5,20 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useRef } from 'react';
 
 const useTrackHistory = () => {
-  const { content, progress, images, generatedAudio } = useContent();
+  const { content, progress, images, generatedAudio,setIsSavingHistory } = useContent();
   
   const router = useRouter();
   const pathname = usePathname()
   const searchParams = useSearchParams();
-
-
-
-  
-
   
   const stepParam = searchParams.get('step');
   const currentStep = parseInt(stepParam || '1', 10);
-  const prevState = useRef({ content, progress, images, generatedAudio });
+  const prevState = useRef({ content, images, generatedAudio });
 
   async function updateHistory() {
+
+
+    setIsSavingHistory(true)
 
     const Id = await saveHistoryToBD({
       id:searchParams.get('id'),
@@ -29,6 +27,7 @@ const useTrackHistory = () => {
       images: images,
       generatedAudio: generatedAudio
     })
+    setIsSavingHistory(false)
 
     if (!searchParams.get('id')){
       router.push(pathname + '?' + createQueryString('id',Id,searchParams))
@@ -39,7 +38,7 @@ const useTrackHistory = () => {
   useEffect(() => {
     const hasStateChanged =
       prevState.current.content !== content ||
-      prevState.current.progress !== progress ||
+      // prevState.current.progress !== progress ||
       prevState.current.images !== images ||
       prevState.current.generatedAudio !== generatedAudio;
 
@@ -47,9 +46,9 @@ const useTrackHistory = () => {
       updateHistory()
     }
 
-    prevState.current = { content, progress, images, generatedAudio };
+    prevState.current = { content, images, generatedAudio };
 
-  }, [content, progress, images, generatedAudio]);
+  }, [content, images, generatedAudio]);
 };
 
 export default useTrackHistory;

@@ -26,11 +26,7 @@ const formSchema = z.object({
 export default function ScriptGeneration() {
 
     const [isLodaing, setIsLoading] = useState(false)
-    const {setContent,} = useContent();
-
-
-    
-  
+    const {setContent} = useContent();
   
     const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
@@ -46,7 +42,6 @@ export default function ScriptGeneration() {
   
     async function onSubmit(values: z.infer<typeof formSchema>) {
       setIsLoading(true)
-      setContent(``)
       await new Promise((resolve) => setTimeout(resolve, 1000));
       setContent(` <h2>Why Drinking Water is Essential</h2>
   

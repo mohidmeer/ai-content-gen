@@ -1,0 +1,1 @@
+export const caseAssetPath = (path:string) =>`${process.env.NEXT_PUBLIC_URL_HOSTNAME}/editor${path}`;

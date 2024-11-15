@@ -13,6 +13,8 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import DownloadAssets from '@/components/ContentGeneration/DownloadAssets';
 import useTrackHistory from '@/hooks/useHistory';
 import { createQueryString } from '@/lib/utils';
+import { getHistoryDetails } from '@/actions/user.actions';
+import { RiLoader4Line } from "react-icons/ri";
 
 
 export default function Content() {
@@ -29,10 +31,31 @@ const MainContent = () => {
   const stepParam = searchParams.get('step');
   const currentStep = parseInt(stepParam || '1', 10);
   const pathname = usePathname()
-
   useTrackHistory();
+  const { 
+    content,setContent, 
+    progress, 
+    setProgress, 
+    isSavingHistory,
+    images,
+    setImages,
+    setGeneratedAudio, generatedAudio 
+  } = useContent();
 
-  const { content, progress, setProgress, images, generatedAudio } = useContent();
+  async function getHistoryItems(id:string){
+    
+    const history =  await  getHistoryDetails(id)
+    setContent(history?.content!)
+    setImages(history?.imageUrl!)
+    setGeneratedAudio(history?.voiceUrl!)
+  }
+
+  useEffect(()=>{
+    if(searchParams.get('id') ){
+      getHistoryItems(searchParams.get('id')!)
+    }
+  },[])
+
 
   useEffect(() => {
     const updateProgress = () => {
@@ -78,7 +101,13 @@ const MainContent = () => {
     <>
       <Header title={getTitleForStep()} />
       <ProgressBar progress={progress} />
-      <NavigationButtons currentStep={currentStep} content={content} />
+      <NavigationButtons currentStep={currentStep}  />
+
+            {
+              isSavingHistory &&
+              <RiLoader4Line size={32} className='absolute right-30 top-3   text-primary animate-spin ' />
+            }
+      
       <div className='flex flex-col overflow-hidden'>
 
         <StepContent currentStep={currentStep} />
@@ -88,11 +117,19 @@ const MainContent = () => {
   );
 };
 
-const NavigationButtons = ({ currentStep, content }
-  : { currentStep: number, content: string }) => {
+const NavigationButtons = ({ currentStep }
+  : { currentStep: number }) => {
+
+const { content,  images, generatedAudio } = useContent();
+
   const router = useRouter();
   const pathname = usePathname()
   const searchParams = useSearchParams();
+
+  const isDisabled = 
+  (currentStep === 1 && !content) ||
+  (currentStep === 2 && images.length === 0) ||
+  (currentStep === 3 && !generatedAudio);
 
   const handleNext = () => {
     const nextStep = currentStep + 1;
@@ -119,13 +156,13 @@ const NavigationButtons = ({ currentStep, content }
 
   if (currentStep >= 2) {
     return (
-      <div className='flex justify-between my-10 gap-4'>
+      <div className='flex justify-between mt-4 gap-4'>
         <Button className='w-1/5' size={'default'} onClick={handleBack}>
           <MdArrowBackIos />
           Go Back
         </Button>
         {
-          currentStep === 4 ? '' : <Button className='gap-2 w-1/5' disabled={!content} onClick={handleNext}>
+          currentStep === 4 ? '' : <Button className='gap-2 w-1/5' disabled={isDisabled} onClick={handleNext}>
             Next
             <TbPlayerTrackNextFilled />
           </Button>

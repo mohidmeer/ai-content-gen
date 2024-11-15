@@ -5,8 +5,8 @@ import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import React, { useEffect, useState } from 'react'
 import Placeholder from '@tiptap/extension-placeholder'
-import { EditorMenuBar } from '../Editor/EditorMenuBar';
-import { EditorSkeleton } from '../Editor/EditorSkeleton';
+import { EditorMenuBar  } from '../features/text-editor/EditorMenuBar'; 
+import { EditorSkeleton } from '../features/text-editor/EditorSkeleton';
 import { useContent } from '@/context/ContentContext';
 
 
@@ -26,7 +26,7 @@ const ContentTextEditor = () => {
 
     const editor = useEditor({
         immediatelyRender: false,
-        content:content,
+        content: content,
         extensions: [
             StarterKit,
             TextAlign.configure({
@@ -40,6 +40,8 @@ const ContentTextEditor = () => {
 
         ],
         onUpdate: ({ editor }) => {
+
+            console.log('TEXT EDIOTR EVENT EXECUTED')
             const htmlContent = editor.getHTML();
             const textContent = editor.getText();
 
@@ -49,7 +51,7 @@ const ContentTextEditor = () => {
                 setContent(htmlContent);
             }
 
-            
+
         },
     })
 

@@ -28,6 +28,12 @@ const DownloadAssets = () => {
         extensions: [StarterKit],
     })
 
+    useEffect(() => {
+        if (editor) {
+            editor!.commands.setContent(content);
+        }
+    }, [content]);
+
     
 
     const createDownloadableZip = async () => {

@@ -1,7 +1,7 @@
 'use client';
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import {  useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
 import { BiLoader, BiSolidImageAdd } from "react-icons/bi";
 import { useContent } from "@/context/ContentContext";
@@ -18,7 +18,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
-import { EditorSkeleton } from "../Editor/EditorSkeleton";
+import { EditorSkeleton } from "../features/text-editor/EditorSkeleton";
 import { FaTrash } from "react-icons/fa6";
 
 
@@ -49,7 +49,6 @@ const ImageGeneration = () => {
   const [selectedImage, setSelectedImage] = useState();
   const [selectedImageGeneration, setSelectedImageGeneration] = useState('0')
   const [selectedImageAspectRatio, setSelectedImageAspectRatio] = useState('1')
-  // const editorRef = useRef(null);
   const editorRef = useRef<HTMLDivElement | null>(null);
   const editor = useEditor({
     immediatelyRender: false,
@@ -57,36 +56,42 @@ const ImageGeneration = () => {
     editable: false,
     extensions: [
       StarterKit,
-
     ],
   })
 
 
-
-    const handleMouseUp = () => {
-      const selection = window.getSelection();
-      const selectedText = selection!.toString();
-
-      if (selectedText.length > 0) {
-        const range = selection!.getRangeAt(0);
-        const rect = range.getBoundingClientRect();
-        setSelectedText(selectedText);
+  useEffect(() => {
+    if (editor) {
+      editor!.commands.setContent(content);
+    }
+  }, [content]);
 
 
-        if (editorRef.current && editorRef.current.contains(selection!.anchorNode)) {
-          setSelectionCoords({
-            top: rect.top + window.scrollY - 40,
-            left: rect.left + window.scrollX,
-          });
-          setIsTextSelected(true);
-          // setIsTextSelected(selectedText);
-        } else {
-          setIsTextSelected(false);
-        }
+
+  const handleMouseUp = () => {
+    const selection = window.getSelection();
+    const selectedText = selection!.toString();
+
+    if (selectedText.length > 0) {
+      const range = selection!.getRangeAt(0);
+      const rect = range.getBoundingClientRect();
+      setSelectedText(selectedText);
+
+
+      if (editorRef.current && editorRef.current.contains(selection!.anchorNode)) {
+        setSelectionCoords({
+          top: rect.top + window.scrollY - 40,
+          left: rect.left + window.scrollX,
+        });
+        setIsTextSelected(true);
+        // setIsTextSelected(selectedText);
       } else {
         setIsTextSelected(false);
       }
-    };
+    } else {
+      setIsTextSelected(false);
+    }
+  };
 
 
   return (
@@ -341,7 +346,7 @@ function ImageGenerator({
 
 
 function ImageTimeLine() {
-  const { images,setImages } = useContent();
+  const { images, setImages } = useContent();
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -352,23 +357,23 @@ function ImageTimeLine() {
     e.preventDefault();
     scrollContainer.scrollLeft += e.deltaY;
   };
-  const handleRemove = (index:any) => {
+  const handleRemove = (index: any) => {
     setImages((prevImages) => [
-        ...prevImages.slice(0, index),    // Elements before the target index
-        ...prevImages.slice(index + 1)    // Elements after the target index
+      ...prevImages.slice(0, index),    // Elements before the target index
+      ...prevImages.slice(index + 1)    // Elements after the target index
     ]);
-};
+  };
 
   return (
     <div ref={scrollRef} onWheel={handleWheel} className="p-1 border   flex gap-2  overflow-x-auto overflow-y-hidden custom-scrollbar  my-4  w-[90vw] select-none ">
       {images.map((i, z) => (
         <div key={z} className="relative h-[100px] bg-primary/10 w-[100px] flex-shrink-0">
           <Image alt="" layout="fill" className="cursor-pointer -z-5" src={i} style={{ objectFit: 'cover' }} />
-         
+
           <p className="absolute top-1 left-1 text-primary-foreground  font-bold bg-primary  px-2 z-10">
             {z + 1}
           </p>
-          <FaTrash  
+          <FaTrash
             className="absolute bottom-1 right-1 text-destructive-foreground  p-1 z-10 cursor-pointer bg-destructive "
             size={20} // Adjust icon size as needed
             onClick={() => handleRemove(z)} // Trigger your remove function here

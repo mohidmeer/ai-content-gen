@@ -34,7 +34,7 @@ export const Columns: ColumnDef<HistoryType>[] = [
             <HoverCard>
                 <HoverCardTrigger>{moment(row.getValue("createdAt")).fromNow()}</HoverCardTrigger>
                 <HoverCardContent className="bg-secondary p-2">
-                    {row.getValue("createdAt").toLocaleString()}
+                    {row.getValue<Date>("createdAt").toLocaleString()}
                 </HoverCardContent>
             </HoverCard>
         

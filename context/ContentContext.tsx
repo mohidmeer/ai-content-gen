@@ -26,20 +26,9 @@ const ContentContext = createContext<ContentContextProps | undefined>(undefined)
 
 
 export const ContentProvider = ({ children }: { children: ReactNode }) => {
-    const [content, setContent] = useState<string>( `<h2>Why Drinking Water is Essential</h2>
-        <p>Did you know that drinking water is one of the easiest ways to improve your health?</p>
-        <p>Water helps keep your skin glowing, your energy levels high, and even boosts your mood throughout the day.</p>`);
-    // const [step, setStep] = useState<number>(1);
+    const [content, setContent] = useState<string>('');
     const [progress, setProgress] = useState<number>(22);
-    // const [images, setImages] = useState<string[]>([]);
-    const [images, setImages] = useState<string[]>([
-        "https://images.unsplash.com/photo-1633381521050-26bb467d9d5a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w2NjYxNTJ8MHwxfHJhbmRvbXx8fHx8fHx8fDE3Mjk5MTAxMTB8&ixlib=rb-4.0.3&q=80&w=1080",
-        "https://images.unsplash.com/photo-1529111290557-82f6d5c6cf85?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w2NjYxNTJ8MHwxfHJhbmRvbXx8fHx8fHx8fDE3Mjk5MTAxMTZ8&ixlib=rb-4.0.3&q=80&w=1080",
-        "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w2NjYxNTJ8MHwxfHJhbmRvbXx8fHx8fHx8fDE3Mjk5MTAxMjV8&ixlib=rb-4.0.3&q=80&w=1080",
-        "https://images.unsplash.com/photo-1516913840875-366de3e463bd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w2NjYxNTJ8MHwxfHJhbmRvbXx8fHx8fHx8fDE3Mjk5MTAxMzN8&ixlib=rb-4.0.3&q=80&w=1080",
-        "https://images.unsplash.com/photo-1535643302794-19c3804b874b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w2NjYxNTJ8MHwxfHJhbmRvbXx8fHx8fHx8fDE3Mjk5MTAxMzl8&ixlib=rb-4.0.3&q=80&w=1080",
-        "https://images.unsplash.com/photo-1535987309421-9fa2b1bca07e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w2NjYxNTJ8MHwxfHJhbmRvbXx8fHx8fHx8fDE3Mjk5MTAxNDl8&ixlib=rb-4.0.3&q=80&w=1080"
-    ]);
+    const [images, setImages] = useState<string[]>([]);
     const [voices] = useState<Voice[]>( [
             {
                 "id": "9BWtsMINqrJLrRacOk9x",
@@ -283,22 +272,18 @@ export const ContentProvider = ({ children }: { children: ReactNode }) => {
             }
         ]
     )
-    // const [generatedAudio, setGeneratedAudio] = useState<string | null>(null);
-    const [generatedAudio, setGeneratedAudio] = useState<string | null>('https://storage.googleapis.com/bucket-quickstart_ai-content-gen-439516/audio/mp3/1d16b47b-81a9-4429-a9a1-e6972f7edeb4.mp3');
-
+    const [generatedAudio, setGeneratedAudio] = useState<string | null>(null);
     const [isSavingHistory,setIsSavingHistory] = useState<boolean>(false)
 
     return (
         <ContentContext.Provider value={{ 
             content, setContent, 
-      
             isSavingHistory,setIsSavingHistory, 
             progress, setProgress,
             images,setImages,
             voices,
             generatedAudio,
             setGeneratedAudio, 
-          
             }}>
             {children}
         </ContentContext.Provider>

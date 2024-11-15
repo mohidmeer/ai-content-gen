@@ -1,5 +1,5 @@
 import { BsJustify, BsJustifyLeft, BsJustifyRight } from "react-icons/bs"
-import { Toggle } from "../ui/toggle"
+import { Toggle } from "@/components/ui/toggle"
 
 export const EditorMenuBar = ({ editor }: any) => {
     if (!editor) {
