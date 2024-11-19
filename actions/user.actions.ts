@@ -13,6 +13,7 @@ export const saveHistoryToBD = async (history: HistroyDetails) => {
       let updatedHistory = await prisma.history.update({
         where: { id: history.id },
         data: {
+          script:history.script,
           content: history.content,
           step: history.step,
           imageUrl: history.images,

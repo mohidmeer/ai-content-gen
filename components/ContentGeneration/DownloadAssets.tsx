@@ -19,7 +19,12 @@ const getExtensionFromMime = (mimeType:string) => {
 
 const DownloadAssets = () => {
 
-    const { images,generatedAudio,content } = useContent();
+    const { script,generatedAudio,content } = useContent();
+
+
+    const images = script.scenes.flatMap((scene: { images: string[] }) => scene.images)
+
+
 
     const editor = useEditor({
         immediatelyRender: false,
@@ -70,7 +75,7 @@ const DownloadAssets = () => {
         <div>
             <div className='flex'>
                 <div className='flex flex-col w-1/2  justify-center items-center'>
-                    <ImageGallery />
+                    <ImageGallery images={images}  />
                     <AudioBox />
                     <Button className='w-full mt-8' onClick={createDownloadableZip} >
                         Download Assets
@@ -88,8 +93,7 @@ export default DownloadAssets
 
 
 
-const ImageGallery = () => {
-    const { images } = useContent();
+const ImageGallery = ({images}:{images:[string]}) => {
 
     const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -144,7 +148,7 @@ const EditorBox = ({editor}:{editor:any}) => {
     )
 }
 
-const AudioBox = ({ }) => {
+const AudioBox = () => {
 
     const { generatedAudio } = useContent();
 

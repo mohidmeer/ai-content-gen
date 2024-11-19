@@ -15,6 +15,9 @@ import useTrackHistory from '@/hooks/useHistory';
 import { createQueryString } from '@/lib/utils';
 import { getHistoryDetails } from '@/actions/user.actions';
 import { RiLoader4Line } from "react-icons/ri";
+import { JsonObject } from '@prisma/client/runtime/library';
+import { buttonVariants } from "@/components/ui/button"
+import Link from 'next/link';
 
 
 export default function Content() {
@@ -31,25 +34,27 @@ const MainContent = () => {
   const stepParam = searchParams.get('step');
   const currentStep = parseInt(stepParam || '1', 10);
   const pathname = usePathname()
+
   useTrackHistory();
-  const { 
-    content,setContent, 
-    progress, 
-    setProgress, 
-    isSavingHistory,
-    images,
-    setImages,
-    setGeneratedAudio, generatedAudio 
-  } = useContent();
 
-  async function getHistoryItems(id:string){
-    
-    const history =  await  getHistoryDetails(id)
-    setContent(history?.content!)
-    setImages(history?.imageUrl!)
-    setGeneratedAudio(history?.voiceUrl!)
+  const { content,setContent,progress,setScript,setProgress,isSavingHistory, images,setImages, setGeneratedAudio, generatedAudio } = useContent();
+
+async function getHistoryItems(id: string) {
+  try {
+    const history = await getHistoryDetails(id); 
+
+    if (history) {
+      setContent(history.content || ""); 
+      setScript(history.script as JsonObject || {} );
+      setImages(history.imageUrl || []);
+      setGeneratedAudio(history.voiceUrl || null);
+    } else {
+      console.warn("No history found for the given ID:", id);
+    }
+  } catch (error) {
+    console.error("Failed to fetch history details:", error);
   }
-
+}
   useEffect(()=>{
     if(searchParams.get('id') ){
       getHistoryItems(searchParams.get('id')!)
@@ -79,6 +84,7 @@ const MainContent = () => {
 
     updateProgress();
     router.push(pathname + '?' + createQueryString('step',currentStep.toString(),searchParams))
+
   }, [currentStep, content, images, generatedAudio, setProgress, router]);
 
 
@@ -110,17 +116,34 @@ const MainContent = () => {
       
       <div className='flex flex-col overflow-hidden'>
 
-        <StepContent currentStep={currentStep} />
+        <StepContent currentStep={currentStep}  />
 
       </div>
     </>
   );
 };
 
+
+const StepContent = ({ currentStep }: { currentStep: number }) => {
+  switch (currentStep) {
+    case 1:
+      return <ScriptGeneration />;
+    case 2:
+      return <ImageGeneration />;
+    case 3:
+      return <VoiceGeneration />;
+    case 4:
+      return <DownloadAssets />;
+    default:
+      return null;
+  }
+};
+
+
 const NavigationButtons = ({ currentStep }
   : { currentStep: number }) => {
 
-const { content,  images, generatedAudio } = useContent();
+const { content, generatedAudio } = useContent();
 
   const router = useRouter();
   const pathname = usePathname()
@@ -128,7 +151,7 @@ const { content,  images, generatedAudio } = useContent();
 
   const isDisabled = 
   (currentStep === 1 && !content) ||
-  (currentStep === 2 && images.length === 0) ||
+  // (currentStep === 2 && images.length === 0) ||
   (currentStep === 3 && !generatedAudio);
 
   const handleNext = () => {
@@ -154,7 +177,23 @@ const { content,  images, generatedAudio } = useContent();
     );
   }
 
-  if (currentStep >= 2) {
+  if (currentStep == 3) {
+    return (
+      <div className='flex justify-between mt-4 gap-4'>
+        <Button className='w-1/5' size={'default'} onClick={handleBack}>
+          <MdArrowBackIos />
+          Go Back
+        </Button>
+        
+           <Button className='gap-2 w-1/5' disabled={isDisabled} onClick={handleNext}>
+            Next
+            <TbPlayerTrackNextFilled />
+          </Button>
+        
+      </div>
+    );
+  }
+  if (currentStep == 4) {
     return (
       <div className='flex justify-between mt-4 gap-4'>
         <Button className='w-1/5' size={'default'} onClick={handleBack}>
@@ -162,29 +201,14 @@ const { content,  images, generatedAudio } = useContent();
           Go Back
         </Button>
         {
-          currentStep === 4 ? '' : <Button className='gap-2 w-1/5' disabled={isDisabled} onClick={handleNext}>
-            Next
+           <Link className={`${buttonVariants()} w-1/5 gap-2 `} href={'/video/'+searchParams.get('id')! }    onClick={handleNext}>
+             Open Video Editor
             <TbPlayerTrackNextFilled />
-          </Button>
+          </Link>
         }
       </div>
     );
   }
 
   return null;
-};
-
-const StepContent = ({ currentStep }: { currentStep: number }) => {
-  switch (currentStep) {
-    case 1:
-      return <ScriptGeneration />;
-    case 2:
-      return <ImageGeneration />;
-    case 3:
-      return <VoiceGeneration />;
-    case 4:
-      return <DownloadAssets />;
-    default:
-      return null;
-  }
 };

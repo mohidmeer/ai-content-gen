@@ -1,3 +1,24 @@
+interface Subtitle {
+  index: number;        
+  startTime: string;     
+  endTime: string;       
+  text: string;         
+}
+
+type SrtArray = Subtitle[];
+
+declare type Scene =  {
+  scene_id: string;
+  scene_title: string;
+  text: string;
+  images: [string];
+  stock_footage?: string | null;
+  animation?: string | null;
+  transition?: string | null;
+  image_description?: string | null;
+}
+
+
 declare type Voice = {
   id: string
   name: string;
@@ -25,13 +46,11 @@ interface WordTimestamps {
 interface HistroyDetails {
   id?:string | null;
   content: string ;
+  script: Record<string, any>;
   step: number;
   images: string[]; 
   generatedAudio: string | null | undefined; 
 }
-
-
-
 
 declare type SignInParams = {
   email: string;

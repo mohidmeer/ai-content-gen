@@ -1,13 +1,13 @@
 'use client';
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "../ui/button";
-import { BiLoader, BiSolidImageAdd } from "react-icons/bi";
+import { BiLoader, } from "react-icons/bi";
 import { useContent } from "@/context/ContentContext";
 import { Skeleton } from "../ui/skeleton";
 import Image from "next/image";
-import { MdAdd, MdImage } from "react-icons/md";
+import { MdImage } from "react-icons/md";
 import { Input } from "../ui/input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { imageGenerationAPIs, ImageStyles } from "@/constants";
@@ -18,8 +18,6 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
-import { EditorSkeleton } from "../features/text-editor/EditorSkeleton";
-import { FaTrash } from "react-icons/fa6";
 
 
 const aspectRatios = [
@@ -28,45 +26,30 @@ const aspectRatios = [
   { id: 2, label: '1:1', query: 'square' },
   { id: 3, label: '4:5', query: 'portrait' },
 ]
-
-
-interface SelectionCoords {
-  top: number;
-  left: number;
-}
-
-
 const ImageGeneration = () => {
 
-  const { content } = useContent();
+  interface SelectionCoords {
+    top: number;
+    left: number;
+  }
 
+
+  const { script } = useContent();
   const [loading, setLoading] = useState(false);
-  // const [selectionCoords, setSelectionCoords] = useState(null);
-  const [selectionCoords, setSelectionCoords] = useState<SelectionCoords | null>(null); // Update the type here
-  const [isTextSelected, setIsTextSelected] = useState(false);
-  const [selectedText, setSelectedText] = useState('');
+
+
+
   const [ImageStyle, setImageStyle] = useState('photorealistic');
+
   const [selectedImage, setSelectedImage] = useState();
   const [selectedImageGeneration, setSelectedImageGeneration] = useState('0')
   const [selectedImageAspectRatio, setSelectedImageAspectRatio] = useState('1')
-  const editorRef = useRef<HTMLDivElement | null>(null);
-  const editor = useEditor({
-    immediatelyRender: false,
-    content: content,
-    editable: false,
-    extensions: [
-      StarterKit,
-    ],
-  })
 
-
-  useEffect(() => {
-    if (editor) {
-      editor!.commands.setContent(content);
-    }
-  }, [content]);
-
-
+  const editorRef = useRef<HTMLDivElement>(null);
+  const [parentId, setParentId] = useState<string | null>(null);
+  const [selectionCoords, setSelectionCoords] = useState<SelectionCoords | null>(null);
+  const [isTextSelected, setIsTextSelected] = useState(false);
+  const [selectedText, setSelectedText] = useState('');
 
   const handleMouseUp = () => {
     const selection = window.getSelection();
@@ -76,7 +59,17 @@ const ImageGeneration = () => {
       const range = selection!.getRangeAt(0);
       const rect = range.getBoundingClientRect();
       setSelectedText(selectedText);
+      let node = selection!.anchorNode as Node | null;
+      while (node && !(node instanceof HTMLElement && node.id)) {
+        node = node.parentNode;
+      }
 
+      if (node instanceof HTMLElement && node.id) {
+        console.log(node.id)
+        setParentId(node.id);
+      } else {
+        setParentId(null);
+      }
 
       if (editorRef.current && editorRef.current.contains(selection!.anchorNode)) {
         setSelectionCoords({
@@ -84,35 +77,32 @@ const ImageGeneration = () => {
           left: rect.left + window.scrollX,
         });
         setIsTextSelected(true);
-        // setIsTextSelected(selectedText);
       } else {
         setIsTextSelected(false);
       }
     } else {
       setIsTextSelected(false);
+      setParentId(null);
     }
   };
-
 
   return (
     <div className="">
       <div className="flex mt-8 gap-8 overflow-hidden ">
-        {/* Editor */}
-        <div className="w-full min-h-[50vh] max-h-[50vh] overflow-y-auto custom-scrollbar border">
-          {
-            editor ?
-              <EditorContent editor={editor}
-                className="selection:bg-primary selection:text-primary-foreground     "
-                onMouseUp={handleMouseUp}
-                ref={editorRef}
-              />
-              :
-              <EditorSkeleton />
+        <div className="w-full min-h-[50vh] max-h-[50vh] overflow-y-auto custom-scrollbar border p-2 flex flex-col gap-2 ">
 
-          }
+          <div onMouseUp={handleMouseUp} ref={editorRef} className="flex flex-col gap-2"  >
+            {script.scenes.map((i: Scene) => (
+
+              <Scene key={i.scene_id} scene={i} />
+
+            ))}
+          </div>
+
           {isTextSelected && (
 
             <ImageGenerator
+              scene_id={parentId}
               selectionCoords={selectionCoords}
               selectedText={selectedText}
               imageStyle={ImageStyle}
@@ -125,8 +115,6 @@ const ImageGeneration = () => {
           )}
 
         </div>
-
-        {/* Forms */}
         <div className="w-1/2 border-l pl-2">
           <div>
             <h3 className='text-lg font-semibold my-4'>Select image source</h3>
@@ -231,10 +219,7 @@ const ImageGeneration = () => {
               loading ?
                 <BiLoader className="animate-spin duration-1000" size={52} />
                 :
-                <SelectedImage
-                  selectedImage={selectedImage}
-
-                />
+                <SelectedImage selectedImage={selectedImage} />
               :
               <ImageLoader />
           }
@@ -243,20 +228,16 @@ const ImageGeneration = () => {
 
       </div>
 
-      <div className=" flex justify-center items-center  ">
-        <ImageTimeLine />
-      </div>
-
     </div>
   )
 }
 
-export default ImageGeneration
+
 
 
 function SelectedImage({ selectedImage }: { selectedImage: string }) {
 
-  const { setImages } = useContent();
+  // const { setImages } = useContent();
 
   const handleDownload = async () => {
     try {
@@ -287,18 +268,19 @@ function SelectedImage({ selectedImage }: { selectedImage: string }) {
         style={{ objectFit: 'cover', zIndex: '-5' }}
         alt=""
       />
-      <div className="w-full h-full flex justify-center items-center  ">
+      {/* <div className="w-full h-full flex justify-center items-center  ">
         <div className="flex-col justify-center items-center backdrop-blur-2xl    p-4 group-hover:flex hidden rounded-md ">
           <MdAdd size={52} className="text-primary  spin-once  duration-500" onClick={() => { setImages((prev) => ([...prev, selectedImage])) }} />
           <p>Add to Timeline</p>
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }
 
 
 function ImageGenerator({
+  scene_id,
   selectionCoords,
   imageStyle,
   setSelectedImage,
@@ -306,6 +288,7 @@ function ImageGenerator({
   setLoading,
   selectedImageAspectRatio
 }: {
+  scene_id: string | null
   selectionCoords: any,
   imageStyle: string,
   setSelectedImage: any,
@@ -313,14 +296,34 @@ function ImageGenerator({
   setLoading: any,
   selectedImageAspectRatio: any
 }) {
-  const [prompt, setPrompt] = useState('')
+  const [prompt, setPrompt] = useState(selectedText)
+  const { setScript } = useContent();
+
   async function handleImageGeneration() {
     setLoading(true);
     const res = await getImage(`${prompt} ${selectedText}`, imageStyle, aspectRatios[Number(selectedImageAspectRatio)].query)
     setSelectedImage(res.urls.regular)
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    setScript((prevScript) => {
+      const updatedScenes = [...prevScript.scenes];
+      const index = Number(scene_id) - 1;
+
+      if (index >= 0 && index < updatedScenes.length) {
+        updatedScenes[index] = {
+          ...updatedScenes[index],
+          images: [...(updatedScenes[index].images), res.urls.regular],
+        };
+      }
+
+      return {
+        ...prevScript,
+        scenes: updatedScenes,
+      };
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     setLoading(false)
   }
+
   return (
     <div
       style={{
@@ -328,63 +331,46 @@ function ImageGenerator({
         top: `${selectionCoords?.top}px`,
         left: `${selectionCoords?.left}px`
       }}
-      className="flex"
+      className="flex flex-col"
     >
       <Input
-        className="bg-secondary placeholder:text-[10px] text-xs w-[200px]"
+        className="bg-secondary  w-[300px]"
         placeholder="Specific instructions for image"
         type="text"
         value={prompt}
         onChange={(e) => { setPrompt(e.target.value) }} />
       <Button onClick={() => { handleImageGeneration() }} >
-        <BiSolidImageAdd />
+        Generate
       </Button>
     </div>
   )
 }
 
 
-
-function ImageTimeLine() {
-  const { images, setImages } = useContent();
-
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    const scrollContainer = scrollRef.current;
-    if (!scrollContainer) return;
-
-    e.preventDefault();
-    scrollContainer.scrollLeft += e.deltaY;
-  };
-  const handleRemove = (index: any) => {
-    setImages((prevImages) => [
-      ...prevImages.slice(0, index),    // Elements before the target index
-      ...prevImages.slice(index + 1)    // Elements after the target index
-    ]);
-  };
+const Scene = ({ scene }: { scene: Scene }) => {
 
   return (
-    <div ref={scrollRef} onWheel={handleWheel} className="p-1 border   flex gap-2  overflow-x-auto overflow-y-hidden custom-scrollbar  my-4  w-[90vw] select-none ">
-      {images.map((i, z) => (
-        <div key={z} className="relative h-[100px] bg-primary/10 w-[100px] flex-shrink-0">
-          <Image alt="" layout="fill" className="cursor-pointer -z-5" src={i} style={{ objectFit: 'cover' }} />
+    <div
+      key={scene.scene_id}
+      id={scene.scene_id}
+      className="border rounded-md p-2 flex flex-col gap-2 relative">
+      <div>
+        <h3 className="font-bold">{scene.scene_title}</h3>
+        <p>{scene.text}</p>
+      </div>
+      <div  className="flex gap-2 items-center">
+      {
+        scene.images.map((i, z) => (
+            <div key={z} className="relative w-20 h-20 flex-shrink-0 cursor-pointer border flex justify-center items-center overflow-hidden">
+              <Image alt="" className="" layout="responsive" width={100} height={50} src={i || '/images/Loader.png'} />
+            </div>
+        ))
+      }
+      </div>
 
-          <p className="absolute top-1 left-1 text-primary-foreground  font-bold bg-primary  px-2 z-10">
-            {z + 1}
-          </p>
-          <FaTrash
-            className="absolute bottom-1 right-1 text-destructive-foreground  p-1 z-10 cursor-pointer bg-destructive "
-            size={20} // Adjust icon size as needed
-            onClick={() => handleRemove(z)} // Trigger your remove function here
-          />
-        </div>
-      ))}
     </div>
   );
 }
-
-
 
 
 function ImageLoader() {
@@ -395,7 +381,6 @@ function ImageLoader() {
       <Skeleton className="w-full h-[350px] flex justify-center items-center" >
         <div className="flex flex-col items-center justify-center">
           <MdImage className="text-muted-foreground" size={100} />
-          {/* <p className="text-sm text-muted-foreground" >Images will appear here </p> */}
         </div>
 
       </Skeleton>
@@ -403,3 +388,48 @@ function ImageLoader() {
     </div>
   )
 }
+
+export default ImageGeneration
+
+
+
+// function ImageTimeLine() {
+//   const { images, setImages } = useContent();
+
+//   const scrollRef = useRef<HTMLDivElement>(null);
+
+//   const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+//     const scrollContainer = scrollRef.current;
+//     if (!scrollContainer) return;
+
+//     e.preventDefault();
+//     scrollContainer.scrollLeft += e.deltaY;
+//   };
+//   const handleRemove = (index: any) => {
+//     setImages((prevImages) => [
+//       ...prevImages.slice(0, index),    // Elements before the target index
+//       ...prevImages.slice(index + 1)    // Elements after the target index
+//     ]);
+//   };
+
+//   return (
+//     <div ref={scrollRef} onWheel={handleWheel} className="p-1 border   flex gap-2  overflow-x-auto overflow-y-hidden custom-scrollbar  my-4  w-[90vw] select-none ">
+//       {images.map((i, z) => (
+//         <div key={z} className="relative h-[100px] bg-primary/10 w-[100px] flex-shrink-0">
+//           <Image alt="" layout="fill" className="cursor-pointer -z-5" src={i} style={{ objectFit: 'cover' }} />
+
+//           <p className="absolute top-1 left-1 text-primary-foreground  font-bold bg-primary  px-2 z-10">
+//             {z + 1}
+//           </p>
+//           <FaTrash
+//             className="absolute bottom-1 right-1 text-destructive-foreground  p-1 z-10 cursor-pointer bg-destructive "
+//             size={20} // Adjust icon size as needed
+//             onClick={() => handleRemove(z)} // Trigger your remove function here
+//           />
+//         </div>
+//       ))}
+//     </div>
+//   );
+// }
+
+

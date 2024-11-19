@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 export function getCSSVariable(variableName: string): string {
   const root = document.documentElement;
   const hslValue = getComputedStyle(root).getPropertyValue(variableName).trim();
-  return `hsl(${hslValue})`; // Convert the HSL value into standard hsl(240, 5.9%, 10%) format
+  return `hsl(${hslValue})`;
 
 };
 
@@ -408,7 +408,18 @@ export function extractWordsAndTimestamps(obj:ElevenLabCharacterData) : WordTime
 export const createQueryString =  (name: string, value: any,searchParams:any) => {
   const params = new URLSearchParams(searchParams.toString())
   params.set(name, value)
-
   return params.toString()
 }
 
+export function convertScriptToHTML(script: Record<string, any>): string {
+  let htmlContent = '';
+  
+  script.scenes.forEach((scene: Scene) => {
+      htmlContent +=`<h3 id="${scene.scene_id}"><strong>${scene.scene_title}</strong></h3>
+                      <p id="${scene.scene_id}">${scene.text}</p>`
+  });
+
+  console.log(htmlContent)
+
+  return htmlContent;
+} 

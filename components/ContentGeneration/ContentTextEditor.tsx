@@ -8,12 +8,49 @@ import Placeholder from '@tiptap/extension-placeholder'
 import { EditorMenuBar  } from '../features/text-editor/EditorMenuBar'; 
 import { EditorSkeleton } from '../features/text-editor/EditorSkeleton';
 import { useContent } from '@/context/ContentContext';
+import { Heading } from '@tiptap/extension-heading';
+import { Paragraph } from '@tiptap/extension-paragraph';
 
-
+const CustomHeading = Heading.extend({
+    addAttributes() {
+      return {
+        ...this.parent?.(),
+        id: {
+          default: null,
+          parseHTML: (element) => element.getAttribute('id'),
+          renderHTML: (attributes) => {
+            if (!attributes.id) {
+              return {};
+            }
+            return { id: attributes.id };
+          },
+        },
+      };
+    },
+  });
+  
+  // Extend Paragraph to support `id`
+  const CustomParagraph = Paragraph.extend({
+    addAttributes() {
+      return {
+        ...this.parent?.(),
+        id: {
+          default: null,
+          parseHTML: (element) => element.getAttribute('id'),
+          renderHTML: (attributes) => { 
+            if (!attributes.id) {
+              return {};
+            }
+            return { id: attributes.id };
+          },
+        },
+      };
+    },
+  });
 
 const ContentTextEditor = () => {
 
-    const { content, setContent } = useContent();
+    const {content, setContent} = useContent();
     const [loading] = useState(false)
 
 
@@ -28,7 +65,10 @@ const ContentTextEditor = () => {
         immediatelyRender: false,
         content: content,
         extensions: [
-            StarterKit,
+            StarterKit.configure({
+                heading:false,
+                paragraph:false,
+            }),
             TextAlign.configure({
                 types: ['heading', 'paragraph'],
             }),
@@ -37,6 +77,8 @@ const ContentTextEditor = () => {
                 placeholder: 'Your script will appear here…',
 
             }),
+            CustomHeading,
+            CustomParagraph,
 
         ],
         onUpdate: ({ editor }) => {
@@ -62,10 +104,12 @@ const ContentTextEditor = () => {
                 (!editor || loading) ?
                     <EditorSkeleton /> :
                     <>
-                        <EditorMenuBar editor={editor} />
-                        <EditorContent editor={editor}
+                        {/* <EditorMenuBar editor={editor} />    */}
+                        <div className='max-h-[40vh] overflow-y-auto'>
+                          <EditorContent editor={editor}/>
+                        </div>
 
-                        />
+                        
 
                     </>
             }

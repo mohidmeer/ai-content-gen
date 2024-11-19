@@ -76,7 +76,8 @@ model History {
   userId       String   @db.ObjectId
   type         HistoryType
   step         Int @default(1)
-  content      String?  
+  content      String?    
+  script       Json?  
   imageUrl     String[]
   voiceUrl     String?  
   createdAt    DateTime @default(now())
